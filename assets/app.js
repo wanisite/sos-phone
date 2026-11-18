@@ -1,4 +1,102 @@
 /* ═══════════════════════════════════════════════════════════════
+   VISUELS DES TÉLÉPHONES — SOS Phone
+   Chaque modèle est dessiné dans le même cadre (100 × 200), vu de dos :
+   même format partout, net sur tous les écrans, aucun fichier image.
+
+   POUR UN NOUVEAU MODÈLE : ajoute une ligne
+     "Nom exact du modèle": ["disposition", "couleur"],
+   Dispositions : simple, pilule, diagonale, carre2, pro3, plateau, air, android
+   ═══════════════════════════════════════════════════════════════ */
+const VISUELS = {
+  "iPhone 17 Pro Max":   ["plateau",   "#2f4a6b"],  // bleu intense
+  "iPhone 17 Pro":       ["plateau",   "#e8742f"],  // orange cosmique
+  "iPhone 17 Air":       ["air",       "#cfe1f1"],  // bleu ciel
+  "iPhone 17":           ["pilule",    "#d8cde9"],  // lavande
+  "iPhone 17e":          ["simple",    "#f1f1f3"],  // blanc
+  "iPhone 16 Pro Max":   ["pro3",      "#bdb6aa"],  // titane naturel
+  "iPhone 16 Pro":       ["pro3",      "#c6a888"],  // titane désert
+  "iPhone 16 Plus":      ["pilule",    "#7083dd"],  // outremer
+  "iPhone 16":           ["pilule",    "#94c9c2"],  // sarcelle
+  "iPhone 16e":          ["simple",    "#f1f1f3"],  // blanc
+  "iPhone 15 Pro Max":   ["pro3",      "#414b5a"],  // titane bleu
+  "iPhone 15 Pro":       ["pro3",      "#bab4aa"],  // titane naturel
+  "iPhone 15 Plus":      ["diagonale", "#d6e5d1"],  // vert
+  "iPhone 15":           ["diagonale", "#f3d8da"],  // rose
+  "iPhone 14 Pro Max":   ["pro3",      "#4d4459"],  // violet intense
+  "iPhone 14 Pro":       ["pro3",      "#e9dcc3"],  // or
+  "iPhone 14 Plus":      ["diagonale", "#a8bbd2"],  // bleu
+  "iPhone 14":           ["diagonale", "#d7cde4"],  // mauve
+  "iPhone 13 Pro Max":   ["pro3",      "#a1b7cd"],  // bleu alpin
+  "iPhone 13 Pro":       ["pro3",      "#57554f"],  // graphite
+  "iPhone 13":           ["diagonale", "#f5dfdb"],  // rose
+  "iPhone 13 mini":      ["diagonale", "#2d333a"],  // minuit
+  "iPhone 12 Pro Max":   ["pro3",      "#30495e"],  // bleu pacifique
+  "iPhone 12 Pro":       ["pro3",      "#e6d4b6"],  // or
+  "iPhone 12":           ["carre2",    "#24527d"],  // bleu
+  "iPhone 12 mini":      ["carre2",    "#f1f1f3"],  // blanc
+  "iPhone 11 ou plus ancien": ["carre2", "#d2c7e2"],// mauve
+  "Un autre modèle":     ["android",   "#b9bcc4"]
+};
+
+/* ── VRAIES PHOTOS ──────────────────────────────────────────────
+   Rempli par outils/photos.py : chaque photo est recadrée au même
+   format (600 × 1200, fond transparent, téléphone centré) puis rangée
+   dans photos/. Un modèle sans photo garde son illustration. */
+const PHOTOS = {};
+var PHOTOS_BASE = (document.currentScript && document.currentScript.src
+  ? document.currentScript.src.replace(/[^\/]*$/, "") : "") + "photos/";
+
+function slugModele(nom) {
+  return nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+/* Renvoie la photo du modèle si elle existe, sinon son dessin SVG. */
+function visuelTelephone(nom) {
+  if (PHOTOS[nom]) {
+    return '<span class="phone-img phone-photo"><img src="' + PHOTOS_BASE + PHOTOS[nom] + '" alt="" loading="lazy" decoding="async"></span>';
+  }
+  return dessinTelephone(nom);
+}
+
+function dessinTelephone(nom) {
+  var v = VISUELS[nom] || VISUELS["Un autre modèle"];
+  var type = v[0], col = v[1];
+
+  /* Clair ou foncé : le module caméra s'éclaircit sur les teintes sombres. */
+  var r = parseInt(col.slice(1, 3), 16), g = parseInt(col.slice(3, 5), 16), b = parseInt(col.slice(5, 7), 16);
+  var fonce = (r * 299 + g * 587 + b * 114) / 1000 < 140;
+  var module = fonce ? "rgba(255,255,255,.14)" : "rgba(255,255,255,.45)";
+  var trait = fonce ? "rgba(255,255,255,.18)" : "rgba(0,0,0,.10)";
+
+  function objectif(x, y, rr) {
+    return '<circle cx="' + x + '" cy="' + y + '" r="' + rr + '" fill="#26262a" stroke="' + trait + '" stroke-width="1.2"/>' +
+      '<circle cx="' + x + '" cy="' + y + '" r="' + (rr * .58).toFixed(1) + '" fill="#0b0b0f"/>' +
+      '<circle cx="' + (x - rr * .22).toFixed(1) + '" cy="' + (y - rr * .22).toFixed(1) + '" r="' + (rr * .18).toFixed(1) + '" fill="rgba(140,170,255,.45)"/>';
+  }
+  function point(x, y, rr, f) { return '<circle cx="' + x + '" cy="' + y + '" r="' + rr + '" fill="' + (f || "#f4efe2") + '" stroke="' + trait + '" stroke-width=".8"/>'; }
+  function bloc(x, y, w, h, rx) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + rx + '" fill="' + module + '" stroke="' + trait + '" stroke-width="1"/>'; }
+
+  var cam = "";
+  switch (type) {
+    case "simple":    cam = objectif(27, 25, 8) + point(42, 19, 2.4); break;
+    case "pilule":    cam = bloc(16, 11, 22, 46, 11) + objectif(27, 22, 7.5) + objectif(27, 45, 7.5) + point(44, 21, 2.4); break;
+    case "diagonale": cam = bloc(14, 11, 40, 40, 11) + objectif(25, 22, 7.5) + objectif(43, 40, 7.5) + point(44, 21, 2.4); break;
+    case "carre2":    cam = bloc(14, 11, 40, 40, 11) + objectif(25, 22, 7.5) + objectif(25, 40, 7.5) + point(43, 22, 3); break;
+    case "pro3":      cam = bloc(12, 10, 46, 46, 13) + objectif(24, 22, 8.5) + objectif(24, 44, 8.5) + objectif(45, 33, 8.5) + point(45, 17, 2.4) + point(45, 49, 2.4, "#2a2a2e"); break;
+    case "plateau":   cam = '<path d="M16 6h68a10 10 0 0 1 10 10v44H6V16a10 10 0 0 1 10-10z" fill="' + module + '" stroke="' + trait + '" stroke-width="1"/>' +
+                        bloc(12, 10, 46, 46, 13) + objectif(24, 22, 8.5) + objectif(24, 44, 8.5) + objectif(45, 33, 8.5) + point(76, 20, 3) + point(76, 44, 3, "#2a2a2e"); break;
+    case "air":       cam = bloc(12, 10, 76, 26, 13) + objectif(26, 23, 8) + point(43, 23, 2.6); break;
+    default:          cam = bloc(38, 12, 24, 48, 12) + objectif(50, 24, 7.5) + objectif(50, 47, 7.5) + point(68, 18, 2.4);
+  }
+
+  return '<svg class="phone-img" viewBox="-2 -2 104 208" aria-hidden="true">' +
+    '<ellipse cx="50" cy="201" rx="34" ry="3.5" fill="rgba(0,0,0,.10)"/>' +
+    '<rect x="1" y="62" width="2" height="26" rx="1" fill="' + col + '" stroke="' + trait + '" stroke-width=".6"/>' +
+    '<rect x="97" y="56" width="2" height="34" rx="1" fill="' + col + '" stroke="' + trait + '" stroke-width=".6"/>' +
+    '<rect x="2" y="0" width="96" height="198" rx="17" fill="' + col + '" stroke="' + trait + '" stroke-width="1.2"/>' +
+    cam + "</svg>";
+}
+/* ═══════════════════════════════════════════════════════════════
    SOS Phone — web app de devis
    Parcours : accueil → modèle → pannes (+ gammes / avertissements)
               → département → urgence → numéro → devis → RDV
@@ -6,6 +104,9 @@
    ═══════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
+
+  /* Visuels : data/visuels.js (absent = pas d'image, rien ne casse). */
+  var visuelTelephone = typeof window.visuelTelephone === "function" ? window.visuelTelephone : function () { return ""; };
 
   var $view = document.getElementById("view");
   var $back = document.getElementById("back");
@@ -166,13 +267,15 @@
           if (open) h += "</div>";
           h += '<p class="serie">' + esc(m.serie) + '</p><div class="grid">'; serie = m.serie; open = true;
         }
-        h += '<button class="chip" data-act="model" data-v="' + i + '">' + esc(m.nom.replace(/^iPhone /, "iPhone ")) + "</button>";
+        h += '<button class="chip phone" data-act="model" data-v="' + i + '">' + visuelTelephone(m.nom) +
+          '<span class="phone-n"><small>iPhone</small>' + esc(m.nom.replace(/^iPhone /, "")) + "</span></button>";
         n++;
       });
       if (open) h += "</div>";
       if (!n) h += '<p class="empty">Pas trouvé ? Pas de souci, on le chiffre à la main.</p>';
       var autre = MODELES.length - 1;
-      h += '<p class="serie">Autre</p><div class="grid"><button class="chip wide" data-act="model" data-v="' + autre + '">📱 Un autre modèle (Samsung, Xiaomi…)</button></div>';
+      h += '<p class="serie">Autre</p><div class="grid"><button class="chip wide phone-row" data-act="model" data-v="' + autre + '">' + visuelTelephone("Un autre modèle") +
+        '<span><b>Un autre modèle</b><small>Samsung, Xiaomi, Google Pixel…</small></span></button></div>';
       document.getElementById("models").innerHTML = h;
     }
     q.addEventListener("input", draw);
@@ -190,7 +293,7 @@
   /* ── Étape 2 : pannes (multi-choix) ── */
   SCREENS.pannes = function () {
     var c = S.cur;
-    return '<p class="step">Étape 2 sur 4 · ' + esc(c.m.nom) + '</p>' +
+    return '<div class="phone-head">' + visuelTelephone(c.m.nom) + '<div><p class="step">Étape 2 sur 4</p><p class="phone-head-n">' + esc(c.m.nom) + "</p></div></div>" +
       '<h1 class="h1">Qu\'est-ce qu\'il faut réparer ?</h1>' +
       '<p class="sub">Choisis ce qui correspond le mieux.</p>' +
       '<p class="note">Tu peux en choisir plusieurs — <b>−20 %</b> sur ta 2<sup>e</sup> réparation, <b>−30 %</b> sur les suivantes.</p>' +
@@ -566,7 +669,7 @@
     h += '<ul class="lines">';
     S.phones.forEach(function (p, pi) {
       var nom = p.m.devis ? (p.modelText || "Autre modèle") : p.m.nom;
-      if (multi || true) h += '<li class="phone-h">' + esc(nom) + (S.phones.length > 1 ? '<span>' + (pi + 1) + "/" + S.phones.length + "</span>" : "") + "</li>";
+      h += '<li class="phone-h">' + visuelTelephone(p.m.nom) + '<span class="phone-h-n">' + esc(nom) + "</span>" + (S.phones.length > 1 ? '<span>' + (pi + 1) + "/" + S.phones.length + "</span>" : "") + "</li>";
       R.lines.filter(function (l) { return l.pi === pi; }).forEach(function (l) {
         var it = l.it;
         var t = it.famille + (it.gamme ? " — " + it.gamme : "");

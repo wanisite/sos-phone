@@ -354,3 +354,25 @@ body.sosp-plein-ecran { background: var(--bg) !important; color: var(--ink); fon
 .sosp-root { background: var(--bg); color: var(--ink); font-family: var(--font); letter-spacing: -.022em; }
 .sosp-root h1, .sosp-root h2, .sosp-root p { font-family: inherit; }
 .sosp-root .h1, .sosp-root .h2 { font-family: var(--font-d); }
+
+/* ── Visuels téléphones (même cadre pour tous) ── */
+.grid.models, .grid:has(.chip.phone) { grid-template-columns: repeat(3, 1fr); }
+.chip.phone { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 16px 8px 12px; }
+.chip.phone .phone-img { width: 46px; height: 92px; transition: transform .35s var(--ease); }
+.chip.phone:hover .phone-img { transform: translateY(-3px) rotate(-3deg); }
+.phone-n { font-size: 15px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; }
+.phone-n small { display: block; font-size: 11px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; }
+.phone-row { display: flex; align-items: center; gap: 14px; }
+.phone-row .phone-img { width: 30px; height: 60px; flex: none; }
+.phone-row b { display: block; font-weight: 600; }
+.phone-row small { display: block; color: var(--ink-2); font-size: 14px; }
+.phone-head { display: flex; align-items: center; gap: 14px; margin: 4px 0 14px; }
+.phone-head .phone-img { width: 30px; height: 60px; flex: none; }
+.phone-head .step { margin: 0; }
+.phone-head-n { margin: 0; font-weight: 600; font-size: 17px; }
+.lines .phone-h { display: flex; align-items: center; gap: 10px; }
+.lines .phone-h .phone-img { width: 16px; height: 32px; flex: none; }
+.lines .phone-h-n { flex: 1; }
+@media (max-width: 340px) { .grid:has(.chip.phone) { grid-template-columns: repeat(2, 1fr); } }
+.phone-photo { display: block; }
+.phone-photo img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 6px 10px rgba(0,0,0,.12)); }
