@@ -9,6 +9,8 @@ const CONFIG = {
 
   /* Numéro WhatsApp : indicatif + numéro, sans +, sans espace. Ex "33612345678" */
   WHATSAPP: "",
+  /* Utilisé si le réglage WordPress est vide (numéro du Linktree SOS Phone). */
+  WHATSAPP_DEFAUT: "33749015531",
 
   /* Numéro affiché sur l'écran de confirmation (« L'appel viendra du … »). */
   NUMERO_APPEL: "",

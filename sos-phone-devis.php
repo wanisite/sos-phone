@@ -21,7 +21,7 @@ define( 'SOSP_DIR', plugin_dir_path( __FILE__ ) );
 
 function sosp_defaults() {
 	return array(
-		'whatsapp'      => '',
+		'whatsapp'      => '33749015531',
 		'numero_appel'  => '',
 		'instagram'     => 'sosphoneparis75',
 		'heure_debut'   => 9,

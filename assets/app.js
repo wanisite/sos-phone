@@ -115,26 +115,43 @@ function sceneHtml(nom, cls) {
     '</div><span class="cable"></span></div></div>';
 }
 
-function jouerPanne(sc, id) {
+/* Plusieurs pannes à la fois : les effets se superposent. Si certaines
+   sont côté écran et d'autres côté dos, le téléphone se retourne tout
+   seul de temps en temps pour montrer les deux. */
+var ORDRE_FX = ["redemarre", "autre", "diagnostic", "batterie", "connecteur", "desoxydation", "ecran", "vitre", "chassis", "boutons"];
+function jouerPanne(sc, ids) {
   if (!sc) return;
-  var F = FX[id], face = F ? F.face : "back";
+  var touches = (ids == null ? [] : [].concat(ids)).filter(function (id) { return FX[id]; });
+  var tri = touches.slice().sort(function (a, b) { return ORDRE_FX.indexOf(a) - ORDRE_FX.indexOf(b); });
+  var avant = tri.filter(function (id) { return FX[id].face === "front"; });
+  var dos = tri.filter(function (id) { return FX[id].face === "back"; });
   var scr = sc.querySelector(".scr"), bk = sc.querySelector(".bk");
-  clearTimeout(sc._t); clearInterval(sc._c);
+  clearTimeout(sc._t); clearInterval(sc._c); clearInterval(sc._alt);
   sc.setAttribute("data-p", "");
   scr.innerHTML = ""; bk.innerHTML = "";
+  sc.classList.toggle("duo", avant.indexOf("batterie") > -1 && avant.indexOf("connecteur") > -1);
+  /* On montre d'abord le côté de la dernière panne touchée. */
+  var derniere = touches[touches.length - 1];
+  var face = derniere ? FX[derniere].face : "back";
   var tourne = sc.getAttribute("data-face") !== face;
   sc.setAttribute("data-face", face);
   void sc.offsetWidth;
-  if (!F) return;
+  if (!touches.length) return;
   sc._t = setTimeout(function () {
-    sc.setAttribute("data-p", id);
-    (face === "front" ? scr : bk).innerHTML = F.html;
-    if (id === "batterie") {
+    sc.setAttribute("data-p", tri.join(" "));
+    scr.innerHTML = avant.map(function (id) { return FX[id].html; }).join("");
+    bk.innerHTML = dos.map(function (id) { return FX[id].html; }).join("");
+    if (avant.indexOf("batterie") > -1) {
       var pc = sc.querySelector(".fx-pc"), n = 100;
       sc._c = setInterval(function () {
         n = Math.max(1, n - 4); if (pc) pc.textContent = n + " %";
         if (n === 1) clearInterval(sc._c);
       }, 55);
+    }
+    if (avant.length && dos.length) {
+      sc._alt = setInterval(function () {
+        sc.setAttribute("data-face", sc.getAttribute("data-face") === "front" ? "back" : "front");
+      }, 3200);
     }
   }, tourne ? 520 : 30);
 }
@@ -189,6 +206,9 @@ function dessinTelephone(nom) {
   /* Visuels : data/visuels.js (absent = pas d'image, rien ne casse). */
   var visuelTelephone = typeof window.visuelTelephone === "function" ? window.visuelTelephone : function () { return ""; };
 
+  /* Numéros : si le réglage WordPress est vide, on prend ceux de config.js. */
+  if (!CONFIG.WHATSAPP) CONFIG.WHATSAPP = CONFIG.WHATSAPP_DEFAUT || "";
+  if (!CONFIG.NUMERO_APPEL) CONFIG.NUMERO_APPEL = CONFIG.NUMERO_APPEL_DEFAUT || "";
   var $view = document.getElementById("view");
   var $back = document.getElementById("back");
   var $prog = document.getElementById("progress");
@@ -250,7 +270,7 @@ function dessinTelephone(nom) {
         itemsLen: S.cur ? S.cur.items.length : 0, qi: S.cur ? S.cur.qi : 0,
         phones: S.phones.length });
     }
-    clearTimeout(heroT); fermerLoupe();
+    clearTimeout(heroT);
     var html = SCREENS[name](args || {});
     $view.innerHTML = '<section class="screen' + (isBack ? " back" : "") + '">' + html + "</section>";
     if (SCREENS[name].after) SCREENS[name].after(args || {});
@@ -319,7 +339,7 @@ function dessinTelephone(nom) {
         '<li><b>2</b><span>Tu vois ton prix tout de suite, pièce et main d\'œuvre comprises</span></li>' +
         '<li><b>3</b><span>On t\'appelle pour caler le créneau, le réparateur vient chez toi</span></li>' +
       '</ol></div>' +
-      igCard();
+      igCard() + (CONFIG.WHATSAPP ? '<a class="ig" href="https://wa.me/' + esc(CONFIG.WHATSAPP) + '" target="_blank" rel="noopener"><span class="ig-ico wa-ico">' + WA_ICO + '</span><span><span class="ig-k">Une question ? Écris-nous</span><span class="ig-t">WhatsApp 7j/7</span></span><span class="choice-arrow">→</span></a>' : "");
   };
   /* Démo du héros : le téléphone tombe en panne, puis il est réparé. */
   var heroT = null;
@@ -399,50 +419,27 @@ function dessinTelephone(nom) {
       '<div class="stage-txt"><p class="step">' + esc(etape) + " · " + esc(nom) + '</p>' +
       '<p class="stage-t" id="stageT"></p><p class="stage-s" id="stageS"></p></div></div>';
   }
-  function majStage(id) {
+  function majStage(ids) {
     var sc = document.querySelector(".stage .scene");
     if (!sc) return;
-    jouerPanne(sc, id || null);
-    var F = FX[id];
-    document.getElementById("stageT").textContent = F ? F.t : "Qu'est-ce qui ne va pas ?";
-    document.getElementById("stageS").textContent = F ? F.s : "Touche une panne en dessous.";
+    ids = (ids == null ? [] : [].concat(ids)).filter(function (id) { return FX[id]; });
+    jouerPanne(sc, ids);
+    var t = document.getElementById("stageT"), st = document.getElementById("stageS");
+    if (!ids.length) { t.textContent = "Qu'est-ce qui ne va pas ?"; st.textContent = "Touche une panne : ton téléphone te la montre."; return; }
+    t.innerHTML = ids.map(function (id) { return '<span class="stage-p">' + esc(FX[id].t) + "</span>"; }).join('<span class="stage-plus">+</span>');
+    st.textContent = ids.length === 1 ? FX[ids[0]].s
+      : ids.length + " réparations en une seule visite · −20 % sur la 2e, −30 % sur les suivantes.";
   }
-  /* Zoom plein écran : le téléphone arrive en grand et montre la panne. */
-  var loupeT = null;
-  function loupe(nom, id) {
-    var el = document.getElementById("loupe");
-    if (!el) {
-      el = document.createElement("div"); el.id = "loupe"; el.className = "loupe";
-      el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Aperçu de la panne");
-      document.querySelector(".sosp-root").appendChild(el);
-      el.addEventListener("click", fermerLoupe);
-    }
-    var F = FX[id];
-    el.innerHTML = sceneHtml(nom, "scene-loupe") + '<p class="loupe-t">' + esc(F.t) + '</p><p class="loupe-s">' + esc(F.s) + '</p>' +
-      '<button class="btn btn-dark btn-pill loupe-ok" type="button">OK</button>';
-    el.hidden = false; void el.offsetWidth; el.classList.add("on");
-    var sc = el.querySelector(".scene");
-    setTimeout(function () { jouerPanne(sc, id); }, 280);
-    clearTimeout(loupeT); loupeT = setTimeout(fermerLoupe, 3600);
-  }
-  function fermerLoupe() {
-    var el = document.getElementById("loupe");
-    clearTimeout(loupeT);
-    if (!el || el.hidden) return;
-    el.classList.remove("on");
-    setTimeout(function () { if (!el.classList.contains("on")) { el.hidden = true; el.innerHTML = ""; } }, 300);
-  }
-
   /* Après chaque écran : si une scène est là, elle joue sa panne. */
   var STAGE_PANNE = null;
 
   /* ── Étape 2 : pannes (multi-choix) ── */
   SCREENS.pannes = function () {
     var c = S.cur;
-    STAGE_PANNE = c.sel[c.sel.length - 1] || null;
+    STAGE_PANNE = c.sel.slice();
     return stage(c.m.nom, c.sel[c.sel.length - 1], "Étape 2 sur 4", true) +
       '<h1 class="h1">Qu\'est-ce qu\'il faut réparer ?</h1>' +
-      '<p class="sub">Touche une panne : ton téléphone te la montre.</p>' +
+      '<p class="sub">Coche tout ce qui ne va pas : ton téléphone te le montre.</p>' +
       '<p class="note">Tu peux en choisir plusieurs — <b>−20 %</b> sur ta 2<sup>e</sup> réparation, <b>−30 %</b> sur les suivantes.</p>' +
       '<div class="opts">' + PANNES.map(function (p) {
         var on = c.sel.indexOf(p.id) > -1;
@@ -462,8 +459,7 @@ function dessinTelephone(nom) {
     if (k > -1) sel.splice(k, 1); else sel.push(id);
     b.setAttribute("aria-pressed", k < 0);
     /* On montre la panne qu'il vient de toucher, ou la dernière encore cochée. */
-    majStage(k < 0 ? id : sel[sel.length - 1]);
-    if (k < 0) loupe(S.cur.m.nom, id);
+    majStage(sel.slice());
     var cta = document.getElementById("goPannes");
     cta.disabled = !sel.length; cta.textContent = ctaPannes();
   };
@@ -699,18 +695,72 @@ function dessinTelephone(nom) {
     go("devis");
   };
 
-  /* ── Étape 4 : urgence ── */
+  /* ── Étape 4 : le jour et l'heure ── */
+  var JOURS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+  var MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+  var NB_JOURS = 14, DELAI_H = 2;
+  function maintenantParis() {
+    try { return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" })); } catch (e) { return new Date(); }
+  }
+  function jours() {
+    var n = maintenantParis(), l = [];
+    for (var i = 0; i < NB_JOURS; i++) {
+      var d = new Date(n.getFullYear(), n.getMonth(), n.getDate() + i);
+      var h = heures(d, i === 0 ? n : null);
+      if (!h.length) continue;
+      l.push({ d: d, i: i, h: h,
+        court: i === 0 ? "Auj." : i === 1 ? "Demain" : JOURS[d.getDay()].slice(0, 3) + ".",
+        num: d.getDate(), mois: MOIS[d.getMonth()],
+        long: (i === 0 ? "aujourd'hui" : i === 1 ? "demain" : JOURS[d.getDay()]) + " " + d.getDate() + " " + MOIS[d.getMonth()] });
+    }
+    return l;
+  }
+  function heures(d, now) {
+    var l = [];
+    for (var h = CONFIG.HEURE_DEBUT_APPEL; h < CONFIG.HEURE_FIN_APPEL; h++) {
+      if (now && h < now.getHours() + DELAI_H + (now.getMinutes() > 0 ? 1 : 0)) continue;
+      l.push(h);
+    }
+    return l;
+  }
   SCREENS.urgence = function () {
-    return '<p class="step">Étape 4 sur 4</p><h1 class="h1">C\'est pour quand ?</h1>' +
-      '<p class="sub">Juste pour savoir si on te fait passer en priorité.</p>' +
-      '<div class="opts">' + URGENCES.map(function (u) {
-        return '<button class="opt" data-act="urg" data-v="' + u.id + '"><span class="opt-ico">' + u.ico + '</span>' +
-          '<span class="opt-txt"><span class="opt-t">' + esc(u.titre) + '</span><span class="opt-s">' + esc(u.detail) + "</span></span>" +
-          '<span class="choice-arrow">→</span></button>';
-      }).join("") + "</div>";
+    var J = jours();
+    if (!S.rdv || !J.some(function (j) { return j.i === S.rdv.i; })) S.rdv = { i: J.length ? J[0].i : 0, h: null };
+    return '<p class="step">Étape 4 sur 4</p><h1 class="h1">On passe quand ?</h1>' +
+      '<p class="sub">Choisis ton jour et ton heure. On te confirme le créneau sur WhatsApp.</p>' +
+      '<div class="jours" role="listbox" aria-label="Jour">' + J.map(function (j) {
+        return '<button class="jour" role="option" data-act="jour" data-v="' + j.i + '" aria-selected="' + (S.rdv.i === j.i) + '">' +
+          '<span class="jour-k">' + esc(j.court) + '</span><span class="jour-n">' + j.num + '</span><span class="jour-m">' + esc(j.mois) + "</span></button>";
+      }).join("") + "</div>" +
+      '<p class="label">Heure d\'arrivée du réparateur</p><div class="heures" id="heures"></div>' +
+      '<div class="cta"><button class="btn btn-dark" id="rdvGo" data-act="rdvOk" disabled>Choisis une heure</button>' +
+      '<button class="link" data-act="urg" data-v="info">Je regarde juste le prix</button></div>';
+  };
+  SCREENS.urgence.after = function () { dessineHeures(); };
+  function dessineHeures() {
+    var j = jours().filter(function (x) { return x.i === S.rdv.i; })[0];
+    document.getElementById("heures").innerHTML = (j ? j.h : []).map(function (h) {
+      return '<button class="heure" data-act="heure" data-v="' + h + '" aria-pressed="' + (S.rdv.h === h) + '">' + h + " h</button>";
+    }).join("");
+    var go = document.getElementById("rdvGo");
+    go.disabled = S.rdv.h == null;
+    go.textContent = S.rdv.h == null ? "Choisis une heure" : "Réserver " + j.long + " à " + S.rdv.h + " h →";
+  }
+  ACTS.jour = function (i) {
+    S.rdv = { i: +i, h: null };
+    Array.prototype.forEach.call(document.querySelectorAll(".jour"), function (b) { b.setAttribute("aria-selected", b.getAttribute("data-v") === i); });
+    dessineHeures();
+  };
+  ACTS.heure = function (h) { S.rdv.h = +h; dessineHeures(); };
+  ACTS.rdvOk = function () {
+    var j = jours().filter(function (x) { return x.i === S.rdv.i; })[0];
+    S.rdv.texte = j.long + " à " + S.rdv.h + " h";
+    S.urgence = { id: "rdv", titre: "RDV souhaité : " + S.rdv.texte, chaud: true };
+    if (S.tel) go("devis"); else go("tel");
   };
   ACTS.urg = function (id) {
     S.urgence = URGENCES.filter(function (u) { return u.id === id; })[0];
+    S.rdv = null;
     if (S.tel) go("devis"); else go("tel");
   };
 
@@ -859,15 +909,18 @@ function dessinTelephone(nom) {
         '<div class="cta"><button class="btn btn-dark" data-act="confirm">Valider ma demande d\'envoi</button></div>';
     } else {
       var hot = !S.urgence || S.urgence.chaud;
-      h += '<div class="promise"><span class="dot"></span><span><b>' +
+      h += (S.rdv && S.rdv.texte
+        ? '<div class="promise"><span class="dot"></span><span><b>Ton créneau : ' + esc(S.rdv.texte) + "</b><br>On te le confirme sur WhatsApp au " + esc(S.tel ? S.tel.affiche : "") + (S.dep ? ", réparateur dans le " + S.dep.c : "") + '. <button class="link" style="display:inline;margin:0" data-act="changerRdv">Changer</button></span></div>'
+        : '<div class="promise"><span class="dot"></span><span><b>' +
         (enHeuresAppel() ? "Prise de RDV en moins de 10 min" : "Prise de RDV dès " + CONFIG.HEURE_DEBUT_APPEL + "h") +
-        "</b><br>On t'appelle au " + esc(S.tel ? S.tel.affiche : "") + " pour caler ton créneau" + (S.dep ? " dans le " + S.dep.c : "") + ".</span></div>" +
+        "</b><br>On t'appelle au " + esc(S.tel ? S.tel.affiche : "") + " pour caler ton créneau" + (S.dep ? " dans le " + S.dep.c : "") + ".</span></div>") +
         '<div class="cta"><p class="cta-info">🔒 Ton prix est bloqué 7 jours · code <b>' + esc(S.code) + "</b></p>" +
-        '<button class="btn ' + (hot ? "btn-yellow" : "btn-dark") + '" data-act="confirm">' + (hot ? "Prendre mon RDV" : "Bloquer mon prix 7 jours") + "</button></div>";
+        '<button class="btn ' + (hot ? "btn-yellow" : "btn-dark") + '" data-act="confirm">' + (hot ? (S.rdv && S.rdv.texte ? "Réserver " + S.rdv.texte : "Prendre mon RDV") : "Bloquer mon prix 7 jours") + "</button></div>";
     }
     return h;
   };
   ACTS.addPhone = function () { go("modele"); };
+  ACTS.changerRdv = function () { go("urgence"); };
   ACTS.promoOpen = function (v, b) {
     var p = document.getElementById("promo"); p.hidden = false; b.hidden = true;
     var inp = document.getElementById("promoIn"); inp.focus();
@@ -891,7 +944,10 @@ function dessinTelephone(nom) {
   var CHECK = '<svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   SCREENS.done = function () {
     return '<div class="done"><div class="done-ico">' + CHECK + '</div>' +
-      '<h1 class="h1">C\'est noté</h1><p class="sub">On t\'appelle pour caler ton créneau.</p>' +
+      '<h1 class="h1">C\'est noté</h1>' +
+      (S.rdv && S.rdv.texte
+        ? '<p class="sub">Créneau demandé : <b>' + esc(S.rdv.texte) + '</b>. On te le confirme sur WhatsApp.</p>'
+        : '<p class="sub">On t\'appelle pour caler ton créneau.</p>') +
       (CONFIG.NUMERO_APPEL ? '<p class="step">L\'appel viendra du</p><div class="callnum">' + esc(CONFIG.NUMERO_APPEL) + '</div><p><b>Décroche, c\'est nous !</b></p>' : "") +
       '<p class="sub">Garde ton code : <span class="code">' + esc(S.code) + "</span></p>" +
       '<p class="sub">Ton prix ne bouge pas : pièce et main d\'œuvre comprises, valable 7 jours.</p>' +
@@ -917,11 +973,24 @@ function dessinTelephone(nom) {
     if (!CONFIG.INSTAGRAM) return "";
     return '<a class="btn btn-ghost" href="' + igUrl() + '" target="_blank" rel="noopener">' + IG_ICO + ' Suis-nous sur Instagram</a>';
   }
+  function waTexte() {
+    var R = compute(), l = ["Bonjour SOS Phone, voici ma demande (" + S.code + ") :"];
+    S.phones.forEach(function (p) {
+      l.push("📱 " + (p.m.devis ? (p.modelText || "Autre modèle") : p.m.nom) + " : " +
+        p.items.map(function (it) { return it.famille + (it.gamme ? " " + it.gamme : ""); }).join(", "));
+      if (p.desc) l.push("   « " + p.desc + " »");
+    });
+    l.push("💶 " + (R.devis ? "À chiffrer" + (R.total ? " (+ " + eur(R.total) + " déjà chiffrés)" : "") : eur(R.total)));
+    if (S.rdv && S.rdv.texte) l.push("📅 " + S.rdv.texte.charAt(0).toUpperCase() + S.rdv.texte.slice(1));
+    if (S.dep) l.push("📍 " + S.dep.c + " " + S.dep.n);
+    return l.join("\n");
+  }
   function waLink() {
     if (!CONFIG.WHATSAPP) return "";
-    return '<a class="btn btn-dark" href="https://api.whatsapp.com/send?phone=' + esc(CONFIG.WHATSAPP) +
-      "&text=" + encodeURIComponent("Bonjour SOS Phone, mon code devis : " + S.code) + '" target="_blank" rel="noopener">Un souci ? Écris-nous sur WhatsApp</a>';
+    return '<a class="btn btn-wa" href="https://wa.me/' + esc(CONFIG.WHATSAPP) +
+      "?text=" + encodeURIComponent(waTexte()) + '" target="_blank" rel="noopener">' + WA_ICO + " Confirmer sur WhatsApp</a>";
   }
+  var WA_ICO = '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>';
 
   /* ═══ ENVOI DE LA DEMANDE ══════════════════════════════════ */
   function sendLead(etape) {
@@ -948,7 +1017,7 @@ function dessinTelephone(nom) {
 
   /* ── Démarrage ── */
   window.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { var l = document.getElementById("loupe"); if (l && !l.hidden) return fermerLoupe(); if (!$back.hidden) back(); }
+    if (e.key === "Escape" && !$back.hidden) back();
   });
   reset();
   go("home");
