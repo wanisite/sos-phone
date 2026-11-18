@@ -131,19 +131,6 @@ a:hover { text-decoration: underline; }
 .hl { color: var(--blue); }
 
 /* ── Accueil ─────────────────────────────── */
-.hero {
-  background: var(--hero-bg); color: var(--hero-ink); border-radius: 28px;
-  padding: 34px 24px 24px; margin: 6px 0 22px; position: relative; overflow: hidden; text-align: center;
-}
-.hero .h1 { color: var(--hero-ink); font-size: clamp(36px, 10vw, 52px); }
-.hero .hl { color: #fff; background: #e5172f; padding: 0 .18em; border-radius: .18em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.hero p { color: rgba(255,255,255,.82); margin: 0 auto 22px; max-width: 30ch; }
-.hero::before {
-  content: ""; position: absolute; left: 50%; top: -120px; width: 320px; height: 220px; transform: translateX(-50%);
-  background: radial-gradient(closest-side, rgba(255,255,255,.22), transparent); pointer-events: none;
-}
-.hero > * { position: relative; }
-
 .choice {
   display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; color: var(--ink);
   background: var(--surface); border: 0; border-radius: var(--radius);
@@ -376,3 +363,183 @@ body.sosp-plein-ecran { background: var(--bg) !important; color: var(--ink); fon
 @media (max-width: 340px) { .grid:has(.chip.phone) { grid-template-columns: repeat(2, 1fr); } }
 .phone-photo { display: block; }
 .phone-photo img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 6px 10px rgba(0,0,0,.12)); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCUEIL façon Apple : grand titre, un bouton, le produit en grand
+   ═══════════════════════════════════════════════════════════════ */
+.hero { text-align: center; padding: 30px 0 4px; }
+.hero-t { font: 700 clamp(38px, 11vw, 56px)/1.04 var(--font-d); letter-spacing: -.045em; margin: 0 0 12px; }
+.hero-s { color: var(--ink-2); font-size: 19px; line-height: 1.4; margin: 0 auto 22px; max-width: 30ch; }
+.btn-pill { width: auto; display: inline-flex; min-height: 46px; padding: 12px 26px; font-weight: 600; }
+.scene.scene-hero { --h: min(430px, 100vw); margin: 34px auto 0; }
+.hero-cap { font: 600 17px/1.3 var(--font-d); letter-spacing: -.02em; min-height: 1.3em; margin: 18px 0 0; transition: color .3s var(--ease); }
+.hero-cap.ok { color: var(--green); }
+.sec-t { font: 700 24px/1.15 var(--font-d); letter-spacing: -.03em; margin: 38px 0 12px; }
+.trust { margin-top: 22px; }
+
+/* Liste groupée iOS */
+.liste { background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+.liste-l { display: flex; align-items: center; gap: 14px; width: 100%; border: 0; background: none; color: var(--ink); padding: 0 16px; min-height: 56px; text-align: left; font-size: 17px; }
+.liste-l + .liste-l .liste-t, .liste-l + .liste-l .liste-chev { border-top: .5px solid var(--line); }
+.liste-ico { width: 32px; height: 32px; flex: none; border-radius: 8px; background: var(--bg); display: grid; place-items: center; font-size: 18px; }
+.liste-t { flex: 1; align-self: stretch; display: flex; align-items: center; font-weight: 500; }
+.liste-chev { align-self: stretch; display: flex; align-items: center; color: var(--ink-3); font-size: 22px; padding-left: 8px; }
+.liste-l:hover { background: var(--fill); }
+.liste-l:active { background: var(--line); }
+.how { margin-top: 0; }
+.how + .choice { margin-top: 26px; }
+
+/* ── Grille des modèles : vraies photos de dos ── */
+.chip.phone { padding: 18px 8px 12px; gap: 12px; }
+.chip.phone .phone-img { width: 52px; height: 106px; }
+.chip.phone:hover .phone-img { transform: translateY(-4px); }
+.phone-photo img { filter: drop-shadow(0 8px 10px rgba(0,0,0,.16)); }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCÈNE : le téléphone qui montre la panne
+   ═══════════════════════════════════════════════════════════════ */
+.scene { --h: 200px; position: relative; flex: none; }
+.scene-ph { position: relative; height: var(--h); aspect-ratio: .486; margin: 0 auto; perspective: 1400px; }
+.scene-ph::after { content: ""; position: absolute; left: 12%; right: 12%; bottom: -4%; height: 5%; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.22), transparent); z-index: -1; }
+.flip { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,.7,.2,1); }
+.scene[data-face="front"] .flip { transform: rotateY(180deg); }
+.face { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.face > img, .face > svg { width: 100%; height: 100%; display: block; }
+.f-face { transform: rotateY(180deg); }
+.scr { position: absolute; inset: 2.3% 4.6%; border-radius: 12.5% / 5.8%; overflow: hidden; }
+.bk { position: absolute; inset: 0; border-radius: 13.5% / 6.5%; overflow: hidden; }
+.scr > *, .bk > * { position: absolute; }
+
+/* Réparé : l'effet s'efface sous un reflet */
+.scene.repare .scr > *, .scene.repare .bk > * { animation: fxOut .6s var(--ease) forwards !important; }
+.scene.repare .scr::after, .scene.repare .bk::after {
+  content: ""; position: absolute; inset: -20% -60%; background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.55) 50%, transparent 60%);
+  animation: brille .9s var(--ease) forwards;
+}
+@keyframes fxOut { to { opacity: 0; } }
+@keyframes brille { from { transform: translateX(-60%); } to { transform: translateX(60%); } }
+
+/* Choc commun (écran, vitre) */
+.scene[data-p="ecran"] .scene-ph, .scene[data-p="vitre"] .scene-ph { animation: choc .45s cubic-bezier(.3,.6,.3,1); }
+@keyframes choc { 0% { transform: none; } 20% { transform: translate(-3%, 1%) rotate(-2deg); } 45% { transform: translate(2%, -1%) rotate(1.5deg); } 70% { transform: translate(-1%, 0) rotate(-.6deg); } 100% { transform: none; } }
+
+/* Écran / vitre : fêlure qui se dessine */
+.fx-flash { inset: 0; background: radial-gradient(circle at 64% 35%, rgba(255,255,255,.95), rgba(255,255,255,0) 30%); opacity: 0; animation: flash .5s ease-out .12s both; }
+@keyframes flash { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
+.fx-crack { inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 0 1px rgba(0,0,0,.9)); }
+.fx-crack path { fill: none; stroke: rgba(255,255,255,.95); stroke-width: 1.3px; vector-effect: non-scaling-stroke; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; animation: trace .32s ease-out both; }
+@keyframes trace { to { stroke-dashoffset: 0; } }
+.fx-crack-dos { transform: translate(-14%, 30%); }
+.fx-ink { left: 64%; top: 35%; width: 90%; aspect-ratio: 1; margin: -45% 0 0 -45%; border-radius: 50%;
+  background: radial-gradient(closest-side, #000 35%, rgba(0,0,0,.85) 55%, transparent); transform: scale(0); animation: tache 1.4s ease-out .55s both; }
+@keyframes tache { to { transform: scale(1); } }
+.fx-glitch { left: 0; right: 0; top: 58%; height: 3%; background: linear-gradient(90deg, #0f0, #f0f 40%, #0ff 70%, #ff0); mix-blend-mode: screen; opacity: 0;
+  animation: glitch 1.6s steps(1) .7s infinite; }
+@keyframes glitch { 0% { opacity: .8; top: 58%; } 10% { opacity: 0; } 30% { opacity: .7; top: 71%; height: 1.5%; } 36% { opacity: 0; } 70% { opacity: .6; top: 22%; } 74% { opacity: 0; } }
+
+/* Voile commun */
+.fx-dim { inset: 0; background: rgba(0,0,0,.78); animation: fondu .5s ease-out both; }
+.fx-dim.soft { background: rgba(0,10,40,.45); }
+@keyframes fondu { from { opacity: 0; } }
+
+/* Batterie qui se vide */
+.fx-batt { left: 50%; top: 42%; width: 46%; aspect-ratio: 2.1; transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,.9); border-radius: 18% / 36%; padding: 3%; animation: fondu .4s both; }
+.fx-batt::after { content: ""; position: absolute; right: -9%; top: 32%; width: 5%; height: 36%; border-radius: 0 4px 4px 0; background: rgba(255,255,255,.9); }
+.fx-batt i { display: block; height: 100%; border-radius: 10% / 30%; background: #30d158; animation: vide 2s cubic-bezier(.4,0,.6,1) .2s both; }
+@keyframes vide { 0% { width: 100%; background: #30d158; } 60% { background: #ffd60a; } 85% { background: #ff453a; } 100% { width: 6%; background: #ff453a; } }
+.fx-pc { left: 0; right: 0; top: 54%; text-align: center; color: #fff; font: 700 clamp(12px, calc(var(--h) * .065), 26px)/1 var(--font-d); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.scene[data-p="batterie"] .fx-batt { animation: fondu .4s both, clignote 1s steps(2) 2.3s infinite; }
+@keyframes clignote { 50% { opacity: .35; } }
+
+/* Connecteur : le câble monte, rien ne charge */
+.cable { position: absolute; left: 50%; top: 100%; width: 9%; height: 26%; margin-left: -4.5%; opacity: 0; pointer-events: none;
+  background: linear-gradient(#e9e9ee, #fff 30%, #d6d6dc 100%); border-radius: 22% 22% 6% 6% / 8% 8% 2% 2%; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.cable::before { content: ""; position: absolute; left: 30%; right: 30%; top: -14%; height: 16%; background: #c9c9cf; border-radius: 3px 3px 0 0; }
+.cable::after { content: ""; position: absolute; left: 36%; right: 36%; top: 100%; height: 90%; background: #f2f2f5; }
+.scene[data-p="connecteur"] .cable { animation: cable 2.4s cubic-bezier(.3,.7,.3,1) both infinite; }
+@keyframes cable { 0% { opacity: 0; transform: translateY(40%); } 15% { opacity: 1; } 35% { transform: translateY(6%); } 45% { transform: translateY(12%) rotate(4deg); } 55% { transform: translateY(6%) rotate(-3deg); } 75% { transform: translateY(14%); opacity: 1; } 100% { transform: translateY(40%); opacity: 0; } }
+.fx-bolt { left: 50%; top: 42%; width: 34%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; border: 2px solid rgba(255,255,255,.85); display: grid; place-items: center; }
+.fx-bolt svg { width: 56%; fill: #fff; animation: clignote .5s steps(2) .3s infinite; }
+.fx-bolt::after { content: ""; position: absolute; left: 50%; top: -8%; bottom: -8%; width: 2.5px; margin-left: -1px; background: #ff453a; transform: rotate(-45deg) scaleY(0); animation: barre .3s ease-out 1.4s both; }
+@keyframes barre { to { transform: rotate(-45deg) scaleY(1); } }
+.fx-txt { left: 0; right: 0; top: 62%; text-align: center; color: #fff; font: 600 clamp(9px, calc(var(--h) * .045), 17px)/1.2 var(--font); animation: fondu .4s .6s both; }
+
+/* Châssis : le téléphone se tord */
+.scene[data-p="chassis"] .scene-ph { animation: tord 1.2s cubic-bezier(.3,.7,.3,1) both; }
+@keyframes tord { 0% { transform: none; } 30% { transform: rotate(-9deg) translateY(-3%); } 55% { transform: rotate(5deg) skewY(-4deg); } 100% { transform: rotate(-4deg) skewY(-3deg) skewX(2deg); } }
+.fx-coin { right: -12%; top: -6%; width: 46%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255,69,58,.0) 45%, rgba(255,69,58,.85) 52%, rgba(255,69,58,0) 62%); animation: onde 1.4s ease-out .7s infinite; }
+@keyframes onde { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.2); opacity: 0; } }
+
+/* Boutons latéraux : on appuie, rien ne se passe */
+.sidebtn { position: absolute; right: -1.6%; top: 20%; width: 2.6%; height: 9%; border-radius: 3px; background: #6b6b70; opacity: 0; }
+.scene[data-p="boutons"] .sidebtn { opacity: 1; animation: appui .9s ease-in-out .2s infinite; box-shadow: 0 0 0 0 rgba(255,69,58,.6); }
+@keyframes appui { 0%, 100% { transform: none; box-shadow: 0 0 0 0 rgba(255,69,58,.7); } 30% { transform: translateX(-45%); } 60% { box-shadow: 0 0 0 calc(var(--h) * .05) rgba(255,69,58,0); } }
+
+/* Redémarre en boucle */
+.fx-boot { inset: 0; background: #000; display: grid; place-items: center; animation: boucle 2.6s steps(1) infinite; }
+.fx-boot i { width: 18%; aspect-ratio: 1; border-radius: 50%; border: 2px solid rgba(255,255,255,.2); border-top-color: #fff; animation: tourne .8s linear infinite; }
+@keyframes boucle { 0% { opacity: 1; } 70% { opacity: 0; } 82% { opacity: 1; } }
+@keyframes tourne { to { transform: rotate(360deg); } }
+
+/* Diagnostic : balayage */
+.fx-scan { left: 0; right: 0; height: 18%; background: linear-gradient(transparent, rgba(61,123,255,.55) 85%, #8fb3ff); animation: scan 1.6s ease-in-out infinite alternate; }
+@keyframes scan { from { top: -18%; } to { top: 100%; } }
+
+/* Eau : le niveau monte, des bulles */
+.fx-eau { left: 0; right: 0; bottom: 0; height: 0; background: linear-gradient(rgba(64,156,255,.55), rgba(0,60,200,.75)); animation: monte 1.8s cubic-bezier(.3,.7,.3,1) both; }
+.fx-eau::before { content: ""; position: absolute; left: -50%; width: 200%; top: -7px; height: 14px; border-radius: 45%;
+  background: rgba(120,190,255,.7); animation: vague 1.6s ease-in-out infinite alternate; }
+@keyframes monte { to { height: 72%; } }
+@keyframes vague { from { transform: translateX(-8%) rotate(-1.5deg); } to { transform: translateX(8%) rotate(1.5deg); } }
+.fx-eau i { position: absolute; bottom: 0; width: 6%; aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(255,255,255,.8); animation: bulle 2.2s ease-in infinite; }
+.fx-eau i:nth-child(1) { left: 15%; animation-delay: .4s; } .fx-eau i:nth-child(2) { left: 32%; animation-delay: 1.1s; width: 4%; }
+.fx-eau i:nth-child(3) { left: 50%; animation-delay: .8s; } .fx-eau i:nth-child(4) { left: 66%; animation-delay: 1.6s; width: 8%; }
+.fx-eau i:nth-child(5) { left: 80%; animation-delay: .2s; width: 4%; } .fx-eau i:nth-child(6) { left: 40%; animation-delay: 1.9s; }
+@keyframes bulle { from { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } to { transform: translateY(-700%); opacity: 0; } }
+.scene[data-p="desoxydation"] .scene-ph { animation: flotte 2.4s ease-in-out .3s infinite; }
+@keyframes flotte { 50% { transform: translateY(2%) rotate(-1.5deg); } }
+
+/* Autre */
+.fx-q { left: 50%; top: 45%; width: 34%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; border: 2px solid #fff; color: #fff;
+  display: grid; place-items: center; font: 700 calc(var(--h) * .12)/1 var(--font-d); animation: pouls 1.4s ease-in-out infinite; }
+@keyframes pouls { 50% { transform: translate(-50%, -50%) scale(1.1); } }
+
+/* ── Bandeau de scène en tête des étapes ── */
+.stage { display: flex; align-items: center; gap: 18px; margin: 4px -16px 16px; padding: 14px 16px 16px; background: var(--bg); }
+.stage .scene { --h: 168px; }
+.stage.collant { position: sticky; top: calc(55px + env(safe-area-inset-top)); z-index: 4; border-bottom: .5px solid var(--line);
+  background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); }
+.stage-txt { min-width: 0; }
+.stage .step { margin: 0 0 6px; }
+.stage-t { font: 700 24px/1.12 var(--font-d); letter-spacing: -.03em; margin: 0 0 6px; text-wrap: balance; }
+.stage-s { color: var(--ink-2); font-size: 15px; line-height: 1.35; margin: 0; }
+.admin-bar .stage.collant { top: calc(32px + 55px); }
+@media (min-width: 600px) { .stage .scene { --h: 210px; } .stage-t { font-size: 28px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene *, .scene *::before, .scene *::after, .scene .scene-ph { animation-duration: .001s !important; animation-iteration-count: 1 !important; animation-delay: 0s !important; transition-duration: .001s !important; }
+}
+
+/* ── Zoom plein écran sur la panne ── */
+.loupe { position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+  padding: 24px 24px calc(24px + env(safe-area-inset-bottom)); text-align: center; cursor: pointer;
+  background: rgba(255,255,255,.78); -webkit-backdrop-filter: saturate(180%) blur(28px); backdrop-filter: saturate(180%) blur(28px);
+  opacity: 0; transition: opacity .3s var(--ease); }
+.loupe.on { opacity: 1; }
+.loupe .scene-loupe { --h: min(58vh, 520px); transform: scale(.55) translateY(-20%); transition: transform .55s cubic-bezier(.2,.9,.3,1.08); }
+.loupe.on .scene-loupe { transform: none; }
+.loupe-t { font: 700 30px/1.1 var(--font-d); letter-spacing: -.035em; margin: 28px 0 6px; color: var(--ink); }
+.loupe-s { color: var(--ink-2); font-size: 17px; margin: 0 auto 20px; max-width: 30ch; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .loupe { background: rgba(0,0,0,.72); } }
+:root[data-theme="dark"] .loupe { background: rgba(0,0,0,.72); }
+
+/* Logo : le badge Instagram de SOS Phone */
+.logo { gap: 10px; }
+.logo-img { width: 38px; height: 38px; border-radius: 50%; display: block; flex: none; box-shadow: 0 0 0 .5px var(--line); }
+.how li + li { margin-left: 0; padding-left: 16px; border-top: 0; box-shadow: inset 60px 0 0 var(--surface), inset 0 .5px 0 var(--line); }
+.how li + li b { margin: 0; }
+.loupe-t, .loupe-s, .loupe-ok { position: relative; z-index: 1; }
+.loupe .cable { height: 18%; }

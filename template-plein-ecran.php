@@ -14,6 +14,7 @@ remove_action( 'wp_print_styles', 'print_emoji_styles' );
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 	<meta name="theme-color" content="#ffffff">
 	<meta name="description" content="SOS Phone : réparation de téléphone à domicile en Île-de-France. Ton prix fixe en 40 secondes, un réparateur chez toi.">
+	<?php sosp_tetes_webapp(); ?>
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class( 'sosp-plein-ecran' ); ?>>

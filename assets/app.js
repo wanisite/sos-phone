@@ -39,23 +39,104 @@ const VISUELS = {
 };
 
 /* ── VRAIES PHOTOS ──────────────────────────────────────────────
-   Rempli par outils/photos.py : chaque photo est recadrée au même
-   format (600 × 1200, fond transparent, téléphone centré) puis rangée
-   dans photos/. Un modèle sans photo garde son illustration. */
-const PHOTOS = {};
+   Photos officielles Apple, toutes en noir/graphite pour que la
+   liste reste homogène. photos/dos/ = vu de dos (liste des modèles),
+   photos/face/ = vu de face (pannes d'écran). Même nom de fichier
+   dans les deux dossiers. Un modèle absent garde son illustration. */
+const PHOTOS = {
+  "iPhone 17 Pro Max": "17promax", "iPhone 17 Pro": "17pro", "iPhone 17 Air": "17air", "iPhone 17": "17", "iPhone 17e": "17e",
+  "iPhone 16 Pro Max": "16promax", "iPhone 16 Pro": "16pro", "iPhone 16 Plus": "16plus", "iPhone 16": "16", "iPhone 16e": "16e",
+  "iPhone 15 Pro Max": "15promax", "iPhone 15 Pro": "15pro", "iPhone 15 Plus": "15plus", "iPhone 15": "15",
+  "iPhone 14 Pro Max": "14promax", "iPhone 14 Pro": "14pro", "iPhone 14 Plus": "14plus", "iPhone 14": "14",
+  "iPhone 13 Pro Max": "13promax", "iPhone 13 Pro": "13pro", "iPhone 13": "13", "iPhone 13 mini": "13mini",
+  "iPhone 12 Pro Max": "12promax", "iPhone 12 Pro": "12pro", "iPhone 12": "12", "iPhone 12 mini": "12mini",
+  "iPhone 11 ou plus ancien": "11"
+};
 var PHOTOS_BASE = (document.currentScript && document.currentScript.src
   ? document.currentScript.src.replace(/[^\/]*$/, "") : "") + "photos/";
+function photoUrl(nom, cote) { return PHOTOS[nom] ? PHOTOS_BASE + cote + "/" + PHOTOS[nom] + ".webp" : ""; }
 
 function slugModele(nom) {
-  return nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return nom.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-/* Renvoie la photo du modèle si elle existe, sinon son dessin SVG. */
+/* Renvoie la photo du modèle (de dos) si elle existe, sinon son dessin SVG. */
 function visuelTelephone(nom) {
   if (PHOTOS[nom]) {
-    return '<span class="phone-img phone-photo"><img src="' + PHOTOS_BASE + PHOTOS[nom] + '" alt="" loading="lazy" decoding="async"></span>';
+    return '<span class="phone-img phone-photo"><img src="' + photoUrl(nom, "dos") + '" alt="" loading="lazy" decoding="async"></span>';
   }
   return dessinTelephone(nom);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCÈNE — le téléphone en grand qui « montre » la panne
+   Par défaut on voit le dos. Une panne d'écran le retourne face
+   avant, une panne de dos le laisse de dos. Chaque panne a sa
+   petite animation (FX) jouée par jouerPanne(scene, id).
+   ═══════════════════════════════════════════════════════════════ */
+var FELURE = '<svg class="fx-crack" viewBox="0 0 100 210" preserveAspectRatio="none" aria-hidden="true">' +
+  ["M64 74 L80 42 L86 20 L96 0", "M64 74 L92 66 L100 61", "M64 74 L88 106 L100 128", "M64 74 L59 118 L51 160 L47 210",
+   "M64 74 L31 95 L0 113", "M64 74 L37 52 L15 31 L0 22", "M64 74 L61 31 L57 0", "M64 74 L76 150 L84 210",
+   "M75 54 L79 72 L76 88 L66 95 L54 91 L48 76 L52 60 L64 52 Z", "M85 41 L92 75 L85 104 L60 111 L38 97 L36 62 L60 37",
+   "M59 118 L72 128 L88 106", "M31 95 L22 70 L37 52"].map(function (d, i) {
+    return '<path d="' + d + '" pathLength="1" style="animation-delay:' + (0.18 + i * 0.035).toFixed(3) + 's"/>';
+  }).join("") + "</svg>";
+
+var FX = {
+  ecran: { face: "front", t: "Écran cassé ou noir", s: "On remplace l'écran chez toi, tactile compris.",
+    html: '<span class="fx-flash"></span><span class="fx-ink"></span>' + FELURE + '<span class="fx-glitch"></span>' },
+  batterie: { face: "front", t: "Batterie à plat", s: "Batterie neuve : ton iPhone retient enfin la charge.",
+    html: '<span class="fx-dim"></span><span class="fx-batt"><i></i></span><b class="fx-pc">100 %</b>' },
+  connecteur: { face: "front", t: "Charge mal", s: "Le câble ne tient pas ? On change le connecteur.",
+    html: '<span class="fx-dim"></span><span class="fx-bolt"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><b class="fx-txt">Pas de charge</b>' },
+  vitre: { face: "back", t: "Vitre arrière cassée", s: "On remplace le dos en verre du téléphone.",
+    html: '<span class="fx-flash"></span>' + FELURE.replace("fx-crack", "fx-crack fx-crack-dos") },
+  chassis: { face: "back", t: "Châssis tordu ou cassé", s: "On remplace le cadre du téléphone.",
+    html: '<span class="fx-coin"></span>' },
+  boutons: { face: "back", t: "Boutons qui ne répondent plus", s: "Volume, veille ou silencieux : on les répare.",
+    html: "" },
+  redemarre: { face: "front", t: "Redémarre en boucle", s: "On commence par un diagnostic pour trouver la cause.",
+    html: '<span class="fx-boot"><i></i></span>' },
+  diagnostic: { face: "front", t: "Diagnostic", s: "On trouve la panne et on te dit ce qu'il en est.",
+    html: '<span class="fx-dim soft"></span><span class="fx-scan"></span><b class="fx-txt">Analyse…</b>' },
+  desoxydation: { face: "front", t: "Tombé dans l'eau", s: "Désoxydation, diagnostic compris. Résultat non garanti.",
+    html: '<span class="fx-eau"><i></i><i></i><i></i><i></i><i></i><i></i></span>' },
+  autre: { face: "front", t: "Autre problème", s: "Caméra, haut-parleur… Décris-le, on le chiffre.",
+    html: '<span class="fx-dim"></span><span class="fx-q">?</span>' }
+};
+
+function sceneHtml(nom, cls) {
+  var dos = PHOTOS[nom] ? '<img src="' + photoUrl(nom, "dos") + '" alt="" decoding="async">' : dessinTelephone(nom);
+  var face = PHOTOS[nom] ? '<img src="' + photoUrl(nom, "face") + '" alt="" decoding="async">' : dessinTelephone(nom);
+  return '<div class="scene ' + (cls || "") + '" data-face="back" data-p="" aria-hidden="true">' +
+    '<div class="scene-ph"><div class="flip">' +
+      '<div class="face f-dos">' + dos + '<div class="bk"></div><span class="sidebtn"></span></div>' +
+      '<div class="face f-face">' + face + '<div class="scr"></div></div>' +
+    '</div><span class="cable"></span></div></div>';
+}
+
+function jouerPanne(sc, id) {
+  if (!sc) return;
+  var F = FX[id], face = F ? F.face : "back";
+  var scr = sc.querySelector(".scr"), bk = sc.querySelector(".bk");
+  clearTimeout(sc._t); clearInterval(sc._c);
+  sc.setAttribute("data-p", "");
+  scr.innerHTML = ""; bk.innerHTML = "";
+  var tourne = sc.getAttribute("data-face") !== face;
+  sc.setAttribute("data-face", face);
+  void sc.offsetWidth;
+  if (!F) return;
+  sc._t = setTimeout(function () {
+    sc.setAttribute("data-p", id);
+    (face === "front" ? scr : bk).innerHTML = F.html;
+    if (id === "batterie") {
+      var pc = sc.querySelector(".fx-pc"), n = 100;
+      sc._c = setInterval(function () {
+        n = Math.max(1, n - 4); if (pc) pc.textContent = n + " %";
+        if (n === 1) clearInterval(sc._c);
+      }, 55);
+    }
+  }, tourne ? 520 : 30);
 }
 
 function dessinTelephone(nom) {
@@ -169,9 +250,12 @@ function dessinTelephone(nom) {
         itemsLen: S.cur ? S.cur.items.length : 0, qi: S.cur ? S.cur.qi : 0,
         phones: S.phones.length });
     }
+    clearTimeout(heroT); fermerLoupe();
     var html = SCREENS[name](args || {});
     $view.innerHTML = '<section class="screen' + (isBack ? " back" : "") + '">' + html + "</section>";
     if (SCREENS[name].after) SCREENS[name].after(args || {});
+    if (document.querySelector(".stage")) majStage(STAGE_PANNE);
+    STAGE_PANNE = null;
     $back.hidden = hist.length < 2 || name === "done" || name === "postal";
     $foot.hidden = name !== "home";
     var st = STEP[name] || 0;
@@ -210,40 +294,58 @@ function dessinTelephone(nom) {
   /* ═══ ÉCRANS ═══════════════════════════════════════════════ */
 
   /* ── Accueil ── */
+  var HERO_MODELE = "iPhone 16 Pro";
+  var HERO_CYCLE = ["ecran", "batterie", "desoxydation", "vitre"];
+  var ACCUEIL_PANNES = ["ecran", "batterie", "connecteur", "vitre", "desoxydation", "autre"];
   SCREENS.home = function () {
-    var formation = CONFIG.FORMATION_URL;
     return '' +
       '<div class="hero">' +
-        '<h1 class="h1">Ton prix en <span class="hl">40 secondes</span></h1>' +
-        '<p>Un réparateur vient chez toi en Île-de-France et répare ton téléphone sur place. Prix fixe annoncé avant de réserver.</p>' +
-        '<button class="btn btn-yellow" data-act="start">Voir mon prix →</button>' +
+        '<h1 class="hero-t">Ton iPhone réparé<br>chez toi.</h1>' +
+        '<p class="hero-s">Ton prix fixe en 40 secondes. Un réparateur vient chez toi en Île-de-France et répare sur place.</p>' +
+        '<button class="btn btn-dark btn-pill" data-act="start">Voir mon prix</button>' +
+        sceneHtml(HERO_MODELE, "scene-hero") +
+        '<p class="hero-cap" id="heroCap">&nbsp;</p>' +
       '</div>' +
-      '<p class="step">Qu\'est-ce qui t\'amène ?</p>' +
-      '<button class="choice" data-act="start">' +
-        '<span class="choice-ico">🛠️</span>' +
-        '<span><span class="choice-tag">Réparation à domicile</span>' +
-        '<span class="choice-t">Réparer mon téléphone</span>' +
-        '<span class="choice-s">Ton prix en 40 secondes, un réparateur chez toi.</span></span>' +
-        '<span class="choice-arrow">→</span>' +
-      '</button>' +
-      (formation
-        ? '<a class="choice alt" href="' + esc(formation) + '">'
-        : '<button class="choice alt" data-act="soon">') +
-        '<span class="choice-ico">🎓</span>' +
-        '<span><span class="choice-tag">Formation' + (formation ? "" : ' · <span class="badge violet">Bientôt</span>') + '</span>' +
-        '<span class="choice-t">Apprendre le métier</span>' +
-        '<span class="choice-s">Devenir réparateur et en vivre, même en partant de zéro.</span></span>' +
-        '<span class="choice-arrow">→</span>' +
-      (formation ? "</a>" : "</button>") +
       '<ul class="trust"><li>Réparateur chez toi</li><li>Réparé sur place</li><li>Prix fixe annoncé</li><li>Garantie jusqu\'à 6 mois</li></ul>' +
-      '<div class="how"><p class="step">Comment ça marche</p><ol>' +
+      '<h2 class="sec-t">Qu\'est-ce qui ne va pas ?</h2>' +
+      '<div class="liste">' + ACCUEIL_PANNES.map(function (id) {
+        var p = PANNES.filter(function (x) { return x.id === id; })[0];
+        return '<button class="liste-l" data-act="startPanne" data-v="' + id + '"><span class="liste-ico">' + p.ico + '</span>' +
+          '<span class="liste-t">' + esc(FX[id].t) + '</span><span class="liste-chev">›</span></button>';
+      }).join("") + '</div>' +
+      '<h2 class="sec-t">Comment ça marche</h2>' +
+      '<div class="how"><ol>' +
         '<li><b>1</b><span>Choisis ton modèle et ta panne</span></li>' +
         '<li><b>2</b><span>Tu vois ton prix tout de suite, pièce et main d\'œuvre comprises</span></li>' +
         '<li><b>3</b><span>On t\'appelle pour caler le créneau, le réparateur vient chez toi</span></li>' +
-      '</ol></div>' + igCard();
+      '</ol></div>' +
+      igCard();
   };
+  /* Démo du héros : le téléphone tombe en panne, puis il est réparé. */
+  var heroT = null;
+  SCREENS.home.after = function () {
+    var sc = document.querySelector(".scene-hero"), cap = document.getElementById("heroCap"), k = 0;
+    if (!sc) return;
+    function etape() {
+      var id = HERO_CYCLE[k++ % HERO_CYCLE.length];
+      sc.classList.remove("repare");
+      jouerPanne(sc, id);
+      cap.innerHTML = esc(FX[id].t);
+      cap.className = "hero-cap";
+      heroT = setTimeout(function () {
+        sc.classList.add("repare");
+        cap.innerHTML = "Réparé chez toi <span class=\"ok\">✓</span>";
+        cap.className = "hero-cap ok";
+        heroT = setTimeout(function () {
+          jouerPanne(sc, null); sc.classList.remove("repare");
+          heroT = setTimeout(etape, 900);
+        }, 1500);
+      }, 2600);
+    }
+    heroT = setTimeout(etape, 700);
+  };
+  ACTS.startPanne = function (id) { reset(); S.pre = id; go("modele"); };
   ACTS.start = function () { reset(); go("modele"); };
-  ACTS.soon = function () { toast("La formation arrive bientôt 🎓"); };
 
   /* ── Étape 1 : modèle ── */
   SCREENS.modele = function () {
@@ -284,18 +386,63 @@ function dessinTelephone(nom) {
   ACTS.model = function (i) {
     var m = MODELES[+i];
     newPhone(m);
+    if (S.pre && !m.devis) { S.cur.sel = [S.pre]; S.pre = null; }
     if (m.devis) {
       S.cur.items = [{ id: "autre", famille: "Réparation", titre: "À chiffrer", prix: null, garantie: GARANTIES.defaut }];
       go("desc");
     } else go("pannes");
   };
 
+  /* ── Scène en tête d'écran : le téléphone choisi + la panne en cours ── */
+  function stage(nom, id, etape, collant) {
+    return '<div class="stage' + (collant ? " collant" : "") + '">' + sceneHtml(nom) +
+      '<div class="stage-txt"><p class="step">' + esc(etape) + " · " + esc(nom) + '</p>' +
+      '<p class="stage-t" id="stageT"></p><p class="stage-s" id="stageS"></p></div></div>';
+  }
+  function majStage(id) {
+    var sc = document.querySelector(".stage .scene");
+    if (!sc) return;
+    jouerPanne(sc, id || null);
+    var F = FX[id];
+    document.getElementById("stageT").textContent = F ? F.t : "Qu'est-ce qui ne va pas ?";
+    document.getElementById("stageS").textContent = F ? F.s : "Touche une panne en dessous.";
+  }
+  /* Zoom plein écran : le téléphone arrive en grand et montre la panne. */
+  var loupeT = null;
+  function loupe(nom, id) {
+    var el = document.getElementById("loupe");
+    if (!el) {
+      el = document.createElement("div"); el.id = "loupe"; el.className = "loupe";
+      el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Aperçu de la panne");
+      document.querySelector(".sosp-root").appendChild(el);
+      el.addEventListener("click", fermerLoupe);
+    }
+    var F = FX[id];
+    el.innerHTML = sceneHtml(nom, "scene-loupe") + '<p class="loupe-t">' + esc(F.t) + '</p><p class="loupe-s">' + esc(F.s) + '</p>' +
+      '<button class="btn btn-dark btn-pill loupe-ok" type="button">OK</button>';
+    el.hidden = false; void el.offsetWidth; el.classList.add("on");
+    var sc = el.querySelector(".scene");
+    setTimeout(function () { jouerPanne(sc, id); }, 280);
+    clearTimeout(loupeT); loupeT = setTimeout(fermerLoupe, 3600);
+  }
+  function fermerLoupe() {
+    var el = document.getElementById("loupe");
+    clearTimeout(loupeT);
+    if (!el || el.hidden) return;
+    el.classList.remove("on");
+    setTimeout(function () { if (!el.classList.contains("on")) { el.hidden = true; el.innerHTML = ""; } }, 300);
+  }
+
+  /* Après chaque écran : si une scène est là, elle joue sa panne. */
+  var STAGE_PANNE = null;
+
   /* ── Étape 2 : pannes (multi-choix) ── */
   SCREENS.pannes = function () {
     var c = S.cur;
-    return '<div class="phone-head">' + visuelTelephone(c.m.nom) + '<div><p class="step">Étape 2 sur 4</p><p class="phone-head-n">' + esc(c.m.nom) + "</p></div></div>" +
+    STAGE_PANNE = c.sel[c.sel.length - 1] || null;
+    return stage(c.m.nom, c.sel[c.sel.length - 1], "Étape 2 sur 4", true) +
       '<h1 class="h1">Qu\'est-ce qu\'il faut réparer ?</h1>' +
-      '<p class="sub">Choisis ce qui correspond le mieux.</p>' +
+      '<p class="sub">Touche une panne : ton téléphone te la montre.</p>' +
       '<p class="note">Tu peux en choisir plusieurs — <b>−20 %</b> sur ta 2<sup>e</sup> réparation, <b>−30 %</b> sur les suivantes.</p>' +
       '<div class="opts">' + PANNES.map(function (p) {
         var on = c.sel.indexOf(p.id) > -1;
@@ -314,6 +461,9 @@ function dessinTelephone(nom) {
     var sel = S.cur.sel, k = sel.indexOf(id);
     if (k > -1) sel.splice(k, 1); else sel.push(id);
     b.setAttribute("aria-pressed", k < 0);
+    /* On montre la panne qu'il vient de toucher, ou la dernière encore cochée. */
+    majStage(k < 0 ? id : sel[sel.length - 1]);
+    if (k < 0) loupe(S.cur.m.nom, id);
     var cta = document.getElementById("goPannes");
     cta.disabled = !sel.length; cta.textContent = ctaPannes();
   };
@@ -397,7 +547,8 @@ function dessinTelephone(nom) {
   }
   SCREENS.gamme = function (a) {
     var m = S.cur.m, G = gammes(a.type, m);
-    return '<p class="step">Étape 2 sur 4 · ' + esc(m.nom) + '</p>' +
+    STAGE_PANNE = a.type;
+    return stage(m.nom, a.type, "Étape 2 sur 4") +
       '<h1 class="h1">' + esc(G.t) + '</h1><p class="sub">' + esc(G.s) + '</p>' +
       '<div class="opts">' + G.l.map(function (x, i) {
         return '<button class="opt' + (x.best ? " best" : "") + '" data-act="gammeOk" data-v="' + i + '">' +
@@ -437,7 +588,8 @@ function dessinTelephone(nom) {
 
   /* ── Conseil port de charge ── */
   SCREENS.conseil = function () {
-    return '<div class="card"><span class="card-k">Avant d\'aller plus loin</span>' +
+    STAGE_PANNE = "connecteur";
+    return stage(S.cur.m.nom, "connecteur", "Étape 2 sur 4") + '<div class="card"><span class="card-k">Avant d\'aller plus loin</span>' +
       '<h2 class="h2">Essaie ça d\'abord, c\'est gratuit</h2>' +
       '<p>9 fois sur 10, un port de charge capricieux est juste bouché.</p>' +
       '<div class="tip"><b>Décrasse le port de charge</b>Éteins le téléphone, prends un cure-dent ou une épingle et gratte doucement l\'intérieur du port. De la peluche s\'y tasse avec le temps et empêche le câble de faire contact. Vas-y sans forcer.</div>' +
@@ -460,7 +612,9 @@ function dessinTelephone(nom) {
 
   /* ── Diagnostic ── */
   SCREENS.diag = function () {
-    return '<div class="card"><span class="card-k">Avant d\'aller plus loin</span>' +
+    var c = S.cur;
+    STAGE_PANNE = c.queue[c.qi - 1] === "redemarre" ? "redemarre" : "diagnostic";
+    return stage(c.m.nom, STAGE_PANNE, "Étape 2 sur 4") + '<div class="card"><span class="card-k">Avant d\'aller plus loin</span>' +
       '<h2 class="h2">Diagnostic — ' + eur(DIAGNOSTIC) + '</h2>' +
       '<p>On ouvre le téléphone, on identifie la panne et on te dit exactement ce qu\'il en est.</p>' +
       '<div class="warn"><b>Les ' + DIAGNOSTIC + ' € sont dus dans tous les cas.</b>' +
@@ -474,7 +628,8 @@ function dessinTelephone(nom) {
 
   /* ── Désoxydation ── */
   SCREENS.desox = function () {
-    return '<div class="card"><span class="card-k">Avant d\'aller plus loin</span>' +
+    STAGE_PANNE = "desoxydation";
+    return stage(S.cur.m.nom, "desoxydation", "Étape 2 sur 4") + '<div class="card"><span class="card-k">Avant d\'aller plus loin</span>' +
       '<h2 class="h2">Désoxydation — ' + eur(DESOXYDATION) + ', diagnostic compris</h2>' +
       '<p>On ouvre le téléphone, on le nettoie et on établit un diagnostic complet.</p>' +
       '<div class="warn"><b>À savoir avant de réserver</b><ul>' +
@@ -535,7 +690,6 @@ function dessinTelephone(nom) {
       '<div class="note"><b>Les frais d\'envoi, aller et retour, sont à ta charge.</b></div>' +
       telField("telHz") +
       '<div class="gap"></div><button class="btn btn-dark" id="telHzGo" data-act="hzOk" disabled>Être recontacté pour un envoi</button>' +
-      (CONFIG.FORMATION_URL ? '<a class="link" href="' + esc(CONFIG.FORMATION_URL) + '?src=hors-zone">Ou apprends à le réparer toi-même →</a>' : "") +
       "</div>";
   };
   SCREENS.horszone.after = function () { bindTel("telHz", "telHzGo"); };
@@ -794,7 +948,7 @@ function dessinTelephone(nom) {
 
   /* ── Démarrage ── */
   window.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && !$back.hidden) back();
+    if (e.key === "Escape") { var l = document.getElementById("loupe"); if (l && !l.hidden) return fermerLoupe(); if (!$back.hidden) back(); }
   });
   reset();
   go("home");

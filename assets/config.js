@@ -13,8 +13,6 @@ const CONFIG = {
   /* Numéro affiché sur l'écran de confirmation (« L'appel viendra du … »). */
   NUMERO_APPEL: "",
 
-  /* Page « Apprendre le métier ». Vide = carte affichée « Bientôt ». */
-  FORMATION_URL: "",
 
   /* Compte Instagram, sans @. Vide = lien masqué. */
   INSTAGRAM: "sosphoneparis75",

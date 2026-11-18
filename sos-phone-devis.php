@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SOS Phone — Devis réparation
  * Description: Web app de devis SOS Phone (modèle → panne → département → urgence → numéro → prix). Shortcode [sos_phone]. Les demandes arrivent dans « Demandes SOS ».
- * Version: 1.3.0
+ * Version: 1.4.0
  * Author: SOS Phone
  * Text Domain: sos-phone
  * Requires at least: 6.0
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SOSP_VERSION', '1.3.0' );
+define( 'SOSP_VERSION', '1.4.0' );
 define( 'SOSP_URL', plugin_dir_url( __FILE__ ) );
 define( 'SOSP_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -23,7 +23,6 @@ function sosp_defaults() {
 	return array(
 		'whatsapp'      => '',
 		'numero_appel'  => '',
-		'formation_url' => '',
 		'instagram'     => 'sosphoneparis75',
 		'heure_debut'   => 9,
 		'heure_fin'     => 21,
@@ -49,7 +48,6 @@ add_action( 'admin_init', function () {
 			return array(
 				'whatsapp'      => preg_replace( '/\D/', '', $in['whatsapp'] ?? '' ),
 				'numero_appel'  => sanitize_text_field( $in['numero_appel'] ?? '' ),
-				'formation_url' => esc_url_raw( $in['formation_url'] ?? '' ),
 				'instagram'     => preg_replace( '/[^A-Za-z0-9._]/', '', ltrim( $in['instagram'] ?? '', '@' ) ),
 				'heure_debut'   => max( 0, min( 23, (int) ( $in['heure_debut'] ?? $d['heure_debut'] ) ) ),
 				'heure_fin'     => max( 1, min( 24, (int) ( $in['heure_fin'] ?? $d['heure_fin'] ) ) ),
@@ -77,9 +75,6 @@ function sosp_settings_page() {
 				<tr><th><label for="n">Numéro d'appel affiché</label></th>
 					<td><input id="n" class="regular-text" name="sosp_options[numero_appel]" value="<?php echo esc_attr( $o['numero_appel'] ); ?>" placeholder="06 12 34 56 78">
 					<p class="description">Affiché sur la confirmation : « L'appel viendra du … ».</p></td></tr>
-				<tr><th><label for="f">Lien formation</label></th>
-					<td><input id="f" class="regular-text" type="url" name="sosp_options[formation_url]" value="<?php echo esc_attr( $o['formation_url'] ); ?>">
-					<p class="description">Vide = la carte « Apprendre le métier » affiche « Bientôt ».</p></td></tr>
 				<tr><th><label for="ig">Instagram</label></th>
 					<td>@<input id="ig" class="regular-text" name="sosp_options[instagram]" value="<?php echo esc_attr( $o['instagram'] ); ?>">
 					<p class="description">Nom du compte, sans @. Vide = lien masqué.</p></td></tr>
@@ -331,7 +326,6 @@ function sosp_enqueue() {
 	wp_add_inline_script( 'sosp-config', 'Object.assign(CONFIG,' . wp_json_encode( array(
 		'WHATSAPP'          => $o['whatsapp'],
 		'NUMERO_APPEL'      => $o['numero_appel'],
-		'FORMATION_URL'     => $o['formation_url'],
 		'INSTAGRAM'         => $o['instagram'],
 		'HEURE_DEBUT_APPEL' => (int) $o['heure_debut'],
 		'HEURE_FIN_APPEL'   => (int) $o['heure_fin'],
@@ -352,7 +346,7 @@ function sosp_markup() {
 			<button class="top-back" id="back" type="button" aria-label="Retour" hidden>
 				<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
 			</button>
-			<a class="logo" href="#" id="logo" aria-label="SOS Phone, accueil"><span class="logo-sos">SOS</span><span class="logo-phone">Phone</span></a>
+			<a class="logo" href="#" id="logo" aria-label="SOS Phone, accueil"><img class="logo-img" src="<?php echo esc_url( SOSP_URL . 'assets/logo.jpg' ); ?>" alt="" width="38" height="38"><span class="logo-phone">SOS Phone</span></a>
 			<span class="top-zone">Île-de-France</span>
 		</header>
 		<div class="progress" id="progress" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
@@ -383,6 +377,18 @@ add_shortcode( 'sos_phone', function () {
 	sosp_enqueue();
 	return sosp_markup();
 } );
+
+/* Web app : icônes, manifeste, mode plein écran sur l'écran d'accueil iPhone. */
+function sosp_tetes_webapp() {
+	$u = SOSP_URL . 'assets/';
+	echo '<link rel="icon" type="image/png" href="' . esc_url( $u . 'favicon.png' ) . '">' . "\n";
+	echo '<link rel="apple-touch-icon" href="' . esc_url( $u . 'icone-180.png' ) . '">' . "\n";
+	echo '<link rel="manifest" href="' . esc_url( $u . 'manifest.json' ) . '">' . "\n";
+	echo '<meta name="apple-mobile-web-app-capable" content="yes">' . "\n";
+	echo '<meta name="mobile-web-app-capable" content="yes">' . "\n";
+	echo '<meta name="apple-mobile-web-app-status-bar-style" content="default">' . "\n";
+	echo '<meta name="apple-mobile-web-app-title" content="SOS Phone">' . "\n";
+}
 
 /* Page plein écran : quand une page contient le shortcode, on remplace le gabarit du thème. */
 add_filter( 'template_include', function ( $tpl ) {
