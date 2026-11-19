@@ -1,7 +1,7 @@
 {
   "name": "SOS Phone — Réparation à domicile",
   "short_name": "SOS Phone",
-  "description": "Ton prix fixe en 40 secondes, un réparateur chez toi en Île-de-France.",
+  "description": "Ton prix fixe en 40 secondes, un réparateur chez toi partout en France.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

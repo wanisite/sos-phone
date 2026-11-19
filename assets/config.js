@@ -5,7 +5,7 @@
    ═══════════════════════════════════════════════════════════════ */
 const CONFIG = {
   MARQUE: "SOS Phone",
-  ZONE: "Île-de-France",
+  ZONE: "Partout en France",
 
   /* Numéro WhatsApp : indicatif + numéro, sans +, sans espace. Ex "33612345678" */
   WHATSAPP: "",
@@ -18,6 +18,12 @@ const CONFIG = {
 
   /* Compte Instagram, sans @. Vide = lien masqué. */
   INSTAGRAM: "sosphoneparis75",
+
+  /* E-mail de contact affiché dans l'en-tête. Vide = icône masquée. */
+  EMAIL: "momofoxy96@gmail.com",
+
+  /* Compte Snapchat, sans @. Vide = icône masquée. */
+  SNAPCHAT: "sosphone951",
 
   /* Webhook (Apps Script, Make, Zapier…) qui reçoit chaque demande en JSON.
      Vide = rien n'est envoyé ; la demande est gardée dans le navigateur. */

@@ -34,7 +34,18 @@ const VISUELS = {
   "iPhone 12 Pro":       ["pro3",      "#e6d4b6"],  // or
   "iPhone 12":           ["carre2",    "#24527d"],  // bleu
   "iPhone 12 mini":      ["carre2",    "#f1f1f3"],  // blanc
-  "iPhone 11 ou plus ancien": ["carre2", "#d2c7e2"],// mauve
+  "iPhone 11 Pro Max":   ["pro3",      "#3b3b3d"],
+  "iPhone 11 Pro":       ["pro3",      "#3b3b3d"],
+  "iPhone 11":           ["carre2",    "#2b2b2d"],
+  "iPhone XS Max":       ["carre2",    "#3b3b3d"],
+  "iPhone XS":           ["carre2",    "#3b3b3d"],
+  "iPhone XR":           ["simple",    "#2b2b2d"],
+  "iPhone X":            ["carre2",    "#3b3b3d"],
+  "iPhone SE (2020 / 2022)": ["simple",  "#2b2b2d"],
+  "iPhone 8 Plus":       ["carre2",    "#3b3b3d"],
+  "iPhone 8":            ["simple",    "#3b3b3d"],
+  "iPhone 7 Plus":       ["carre2",    "#2b2b2d"],
+  "iPhone 7":            ["simple",    "#2b2b2d"],
   "Un autre modèle":     ["android",   "#b9bcc4"]
 };
 
@@ -50,7 +61,9 @@ const PHOTOS = {
   "iPhone 14 Pro Max": "14promax", "iPhone 14 Pro": "14pro", "iPhone 14 Plus": "14plus", "iPhone 14": "14",
   "iPhone 13 Pro Max": "13promax", "iPhone 13 Pro": "13pro", "iPhone 13": "13", "iPhone 13 mini": "13mini",
   "iPhone 12 Pro Max": "12promax", "iPhone 12 Pro": "12pro", "iPhone 12": "12", "iPhone 12 mini": "12mini",
-  "iPhone 11 ou plus ancien": "11"
+  "iPhone 11 Pro Max": "11promax", "iPhone 11 Pro": "11pro", "iPhone 11": "11",
+  "iPhone XS Max": "xsmax", "iPhone XS": "xs", "iPhone XR": "xr", "iPhone X": "x", "iPhone SE (2020 / 2022)": "se",
+  "iPhone 8 Plus": "8plus", "iPhone 8": "8", "iPhone 7 Plus": "7plus", "iPhone 7": "7"
 };
 var PHOTOS_BASE = (document.currentScript && document.currentScript.src
   ? document.currentScript.src.replace(/[^\/]*$/, "") : "") + "photos/";
@@ -104,6 +117,11 @@ var FX = {
   autre: { face: "front", t: "Autre problème", s: "Caméra, haut-parleur… Décris-le, on le chiffre.",
     html: '<span class="fx-dim"></span><span class="fx-q">?</span>' }
 };
+
+/* Catégories ajoutées dans WordPress : animation « Autre problème » avec leur nom. */
+(window.SOSP_CATS || []).forEach(function (c) {
+  if (!FX[c.id]) FX[c.id] = { face: "front", t: c.titre, s: c.detail || "On te propose la réparation adaptée.", html: FX.autre.html };
+});
 
 function sceneHtml(nom, cls) {
   var dos = PHOTOS[nom] ? '<img src="' + photoUrl(nom, "dos") + '" alt="" decoding="async">' : dessinTelephone(nom);
@@ -206,6 +224,43 @@ function dessinTelephone(nom) {
   /* Visuels : data/visuels.js (absent = pas d'image, rien ne casse). */
   var visuelTelephone = typeof window.visuelTelephone === "function" ? window.visuelTelephone : function () { return ""; };
 
+  /* ── En-tête : réseaux sociaux + statut « disponible » qui se met à jour ── */
+  var RS = {
+    instagram: "M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077",
+    snapchat: "M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.464-.104.182 0 .359.029.509.09.45.149.734.479.734.838.015.449-.39.839-1.213 1.168-.089.029-.209.075-.344.119-.45.135-1.139.36-1.333.81-.09.224-.061.524.12.868l.015.015c.06.136 1.526 3.475 4.791 4.014.255.044.435.27.42.509 0 .075-.015.149-.045.225-.24.569-1.273.988-3.146 1.271-.059.091-.12.375-.164.57-.029.179-.074.36-.134.553-.076.271-.27.405-.555.405h-.03c-.135 0-.313-.031-.538-.074-.36-.075-.765-.135-1.273-.135-.3 0-.599.015-.913.074-.6.104-1.123.464-1.723.884-.853.599-1.826 1.288-3.294 1.288-.06 0-.119-.015-.18-.015h-.149c-1.468 0-2.427-.675-3.279-1.288-.599-.42-1.107-.779-1.707-.884-.314-.045-.629-.074-.928-.074-.54 0-.958.089-1.272.149-.211.043-.391.074-.54.074-.374 0-.523-.224-.583-.42-.061-.192-.09-.389-.135-.567-.046-.181-.105-.494-.166-.57-1.918-.222-2.95-.642-3.189-1.226-.031-.063-.052-.15-.055-.225-.015-.243.165-.465.42-.509 3.264-.54 4.73-3.879 4.791-4.02l.016-.029c.18-.345.224-.645.119-.869-.195-.434-.884-.658-1.332-.809-.121-.029-.24-.074-.346-.119-1.107-.435-1.257-.93-1.197-1.273.09-.479.674-.793 1.168-.793.146 0 .27.029.383.074.42.194.789.3 1.104.3.234 0 .384-.06.465-.105l-.046-.569c-.098-1.626-.225-3.651.307-4.837C7.392 1.077 10.739.807 11.727.807l.419-.015h.06z",
+    whatsapp: "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"
+  };
+  var TEL_ICO = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>';
+  var MAIL_ICO = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></svg>';
+  function icone(n) { return '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="' + RS[n] + '"/></svg>'; }
+  function enteteReseaux() {
+    var el = document.getElementById("reseaux"); if (!el) return;
+    var l = [];
+    if (CONFIG.INSTAGRAM) l.push('<a href="https://www.instagram.com/' + encodeURIComponent(CONFIG.INSTAGRAM) + '/" target="_blank" rel="noopener" aria-label="Instagram">' + icone("instagram") + "</a>");
+    if (CONFIG.SNAPCHAT) l.push('<a href="https://www.snapchat.com/add/' + encodeURIComponent(CONFIG.SNAPCHAT) + '" target="_blank" rel="noopener" aria-label="Snapchat">' + icone("snapchat") + "</a>");
+    if (CONFIG.WHATSAPP) l.push('<a href="https://wa.me/' + encodeURIComponent(CONFIG.WHATSAPP) + '" target="_blank" rel="noopener" aria-label="WhatsApp">' + icone("whatsapp") + "</a>");
+    if (CONFIG.EMAIL) l.push('<a href="mailto:' + encodeURIComponent(CONFIG.EMAIL).replace("%40", "@") + '?subject=' + encodeURIComponent("Réparation de téléphone") + '" aria-label="Nous écrire par e-mail">' + MAIL_ICO + "</a>");
+    el.innerHTML = l.join("");
+    piedReseaux();
+  }
+  /* Footer : mêmes réseaux que l'en-tête, avec leur nom. */
+  function piedReseaux() {
+    var el = document.getElementById("footReseaux"); if (!el) return;
+    var l = [];
+    if (CONFIG.WHATSAPP) l.push('<li><a href="https://wa.me/' + encodeURIComponent(CONFIG.WHATSAPP) + '" target="_blank" rel="noopener">' + icone("whatsapp") + "WhatsApp</a></li>");
+    if (CONFIG.WHATSAPP) l.push('<li><button type="button" data-act="rappel">' + TEL_ICO + "Être rappelé</button></li>");
+    if (CONFIG.INSTAGRAM) l.push('<li><a href="https://www.instagram.com/' + encodeURIComponent(CONFIG.INSTAGRAM) + '/" target="_blank" rel="noopener">' + icone("instagram") + "@" + esc(CONFIG.INSTAGRAM) + "</a></li>");
+    if (CONFIG.SNAPCHAT) l.push('<li><a href="https://www.snapchat.com/add/' + encodeURIComponent(CONFIG.SNAPCHAT) + '" target="_blank" rel="noopener">' + icone("snapchat") + esc(CONFIG.SNAPCHAT) + "</a></li>");
+    if (CONFIG.EMAIL) l.push('<li><a href="mailto:' + encodeURIComponent(CONFIG.EMAIL).replace("%40", "@") + '">' + MAIL_ICO + "E-mail</a></li>");
+    el.innerHTML = l.join("");
+  }
+  function majStatut() {
+    var el = document.getElementById("statut"); if (!el) return;
+    var ouvert = enHeuresAppel();
+    el.className = "statut" + (ouvert ? "" : " ferme");
+    el.innerHTML = "<i></i>" + (ouvert ? "Disponible maintenant" : "Réponse dès " + CONFIG.HEURE_DEBUT_APPEL + " h");
+  }
+
   /* Numéros : si le réglage WordPress est vide, on prend ceux de config.js. */
   if (!CONFIG.WHATSAPP) CONFIG.WHATSAPP = CONFIG.WHATSAPP_DEFAUT || "";
   if (!CONFIG.NUMERO_APPEL) CONFIG.NUMERO_APPEL = CONFIG.NUMERO_APPEL_DEFAUT || "";
@@ -223,7 +278,7 @@ function dessinTelephone(nom) {
       cur: null,         // téléphone en cours
       dep: null, horsZone: false, urgence: null,
       tel: null, pays: CONFIG.PAYS[0],
-      promo: null, code: null, leadSent: false
+      promo: null, code: null, leadSent: false, serie: "tous"
     };
     hist = [];
   }
@@ -250,7 +305,7 @@ function dessinTelephone(nom) {
   function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
   function heureParis() {
     try {
-      return +new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", hour: "numeric", hourCycle: "h23" }).format(new Date());
+      return parseInt(new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", hour: "numeric", hourCycle: "h23" }).format(new Date()), 10);
     } catch (e) { return new Date().getHours(); }
   }
   function enHeuresAppel() { var h = heureParis(); return h >= CONFIG.HEURE_DEBUT_APPEL && h < CONFIG.HEURE_FIN_APPEL; }
@@ -262,7 +317,7 @@ function dessinTelephone(nom) {
 
   /* ── Navigation ───────────────────────────────────────────── */
   var SCREENS = {};
-  var STEP = { modele: 1, pannes: 2, gamme: 2, conseil: 2, diag: 2, desox: 2, desc: 2, dep: 3, horszone: 3, urgence: 4, tel: 4, devis: 5, done: 5, postal: 5 };
+  var STEP = { marque: 1, modele: 1, pannes: 2, gamme: 2, conseil: 2, diag: 2, desox: 2, desc: 2, dep: 3, horszone: 3, urgence: 4, adresse: 3, tel: 4, devis: 5, done: 5, postal: 5 };
 
   function go(name, args, isBack) {
     if (!isBack) {
@@ -276,8 +331,9 @@ function dessinTelephone(nom) {
     if (SCREENS[name].after) SCREENS[name].after(args || {});
     if (document.querySelector(".stage")) majStage(STAGE_PANNE);
     STAGE_PANNE = null;
-    $back.hidden = hist.length < 2 || name === "done" || name === "postal";
-    $foot.hidden = name !== "home";
+    $back.hidden = name === "home" || name === "done" || name === "postal";
+    $foot.hidden = false;
+    document.body.classList.toggle("sosp-accueil", name === "home");
     var st = STEP[name] || 0;
     $prog.hidden = !st;
     Array.prototype.forEach.call($prog.children, function (el, i) {
@@ -287,7 +343,7 @@ function dessinTelephone(nom) {
     $view.focus({ preventScroll: true });
   }
   function back() {
-    if (hist.length < 2) return;
+    if (hist.length < 2) { reset(); return go("home"); }
     hist.pop();
     var prev = hist[hist.length - 1];
     if (S.phones.length > prev.phones) {
@@ -310,6 +366,12 @@ function dessinTelephone(nom) {
     var fn = ACTS[b.getAttribute("data-act")];
     if (fn) fn(b.getAttribute("data-v"), b, e);
   });
+  /* Le footer est hors de la vue : seuls ses boutons « rappel » passent par ici. */
+  var $pied = document.getElementById("foot");
+  if ($pied) $pied.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act]");
+    if (b && ACTS[b.getAttribute("data-act")]) ACTS[b.getAttribute("data-act")](b.getAttribute("data-v"), b, e);
+  });
 
   /* ═══ ÉCRANS ═══════════════════════════════════════════════ */
 
@@ -319,28 +381,94 @@ function dessinTelephone(nom) {
   var ACCUEIL_PANNES = ["ecran", "batterie", "connecteur", "vitre", "desoxydation", "autre"];
   SCREENS.home = function () {
     return '' +
-      '<div class="hero">' +
-        '<h1 class="hero-t">Ton iPhone réparé<br>chez toi.</h1>' +
-        '<p class="hero-s">Ton prix fixe en 40 secondes. Un réparateur vient chez toi en Île-de-France et répare sur place.</p>' +
-        '<button class="btn btn-dark btn-pill" data-act="start">Voir mon prix</button>' +
-        sceneHtml(HERO_MODELE, "scene-hero") +
-        '<p class="hero-cap" id="heroCap">&nbsp;</p>' +
-      '</div>' +
-      '<ul class="trust"><li>Réparateur chez toi</li><li>Réparé sur place</li><li>Prix fixe annoncé</li><li>Garantie jusqu\'à 6 mois</li></ul>' +
-      '<h2 class="sec-t">Qu\'est-ce qui ne va pas ?</h2>' +
-      '<div class="liste">' + ACCUEIL_PANNES.map(function (id) {
-        var p = PANNES.filter(function (x) { return x.id === id; })[0];
-        return '<button class="liste-l" data-act="startPanne" data-v="' + id + '"><span class="liste-ico">' + p.ico + '</span>' +
-          '<span class="liste-t">' + esc(FX[id].t) + '</span><span class="liste-chev">›</span></button>';
-      }).join("") + '</div>' +
-      '<h2 class="sec-t">Comment ça marche</h2>' +
-      '<div class="how"><ol>' +
-        '<li><b>1</b><span>Choisis ton modèle et ta panne</span></li>' +
-        '<li><b>2</b><span>Tu vois ton prix tout de suite, pièce et main d\'œuvre comprises</span></li>' +
-        '<li><b>3</b><span>On t\'appelle pour caler le créneau, le réparateur vient chez toi</span></li>' +
-      '</ol></div>' +
-      igCard() + (CONFIG.WHATSAPP ? '<a class="ig" href="https://wa.me/' + esc(CONFIG.WHATSAPP) + '" target="_blank" rel="noopener"><span class="ig-ico wa-ico">' + WA_ICO + '</span><span><span class="ig-k">Une question ? Écris-nous</span><span class="ig-t">WhatsApp 7j/7</span></span><span class="choice-arrow">→</span></a>' : "");
+      '<div class="sos-hero">' +
+        '<div class="sos-txt">' +
+          '<h1 class="sos-t">Téléphone cassé ?<br><span>On arrive.</span></h1>' +
+          '<p class="sos-s">Un réparateur vient chez toi, partout en France, et répare sur place, 7j/7.</p>' +
+        '</div>' +
+        '<div class="sos-carte" id="sosCarte" aria-hidden="true">' + carteSvg() + '</div>' +
+        '<div class="sos-visuel">' + sceneHtml(HERO_MODELE, "scene-hero") +
+          '<p class="hero-cap" id="heroCap">&nbsp;</p></div>' +
+        '<div class="sos-cta">' +
+          '<button class="btn-sos" data-act="start"><span>Voir mon prix</span>' +
+            '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>' +
+          '<p class="sos-cta-s">En 40 secondes · pièce et main d\'œuvre comprises · garantie jusqu\'à 6 mois</p>' +
+          '<button class="rappel-lien" data-act="rappel">' + TEL_ICO + '<span>Je préfère être rappelé</span></button>' +
+        '</div>' +
+      '</div>';
   };
+  /* ── Fausse carte : le logo SOS Phone roule jusqu'à « Chez toi » ──
+     Deux compositions : portrait (mobile) et paysage (ordinateur). */
+  function carteSvg() {
+    var mob = window.innerWidth < 900;
+    var W = mob ? 400 : 1600, H = mob ? 860 : 900;
+    var V = mob ? [20, 110, 210, 300, 385] : [110, 330, 560, 700, 880, 1080, 1300, 1490];
+    var Hz = mob ? [90, 250, 410, 560, 700, 820] : [110, 290, 430, 560, 700, 850];
+    var route = mob ? [[300, 900], [300, 700], [20, 700], [20, 560], [70, 560]]
+                    : [[330, 930], [330, 850], [1090, 850], [1090, 560], [1005, 560]];
+    var B = route[route.length - 1], d = "M" + route.map(function (p) { return p.join(" "); }).join(" L");
+    var DUR = 7, logo = PHOTOS_BASE.replace(/photos\/$/, "") + "logo.jpg";
+    var anim = !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+    var h = '<svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs><clipPath id="clipLogo"><circle r="25"/></clipPath>' +
+      '<filter id="ombre" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".25"/></filter></defs>' +
+      '<filter id="flou" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="' + (mob ? 1.6 : 2.4) + '"/></filter>' +
+      '<rect width="' + W + '" height="' + H + '" fill="#eef0f3"/><g filter="url(#flou)">';
+    /* îlots, parcs, eau */
+    h += mob
+      ? '<rect x="120" y="270" width="80" height="120" rx="14" fill="#dcefd9"/><rect x="225" y="580" width="60" height="100" rx="12" fill="#dcefd9"/>' +
+        '<path d="M-20 180 C 120 150 220 230 420 190" stroke="#cfe2f7" stroke-width="38" fill="none"/>'
+      : '<rect x="1110" y="590" width="170" height="90" rx="16" fill="#dcefd9"/><rect x="350" y="130" width="190" height="140" rx="18" fill="#dcefd9"/><rect x="900" y="300" width="160" height="110" rx="16" fill="#dcefd9"/>' +
+        '<path d="M-40 400 C 300 330 520 470 820 380 S 1300 220 1650 300" stroke="#cfe2f7" stroke-width="64" fill="none"/>';
+    /* rues : bordure grise puis chaussée blanche */
+    function rues(sw, col) {
+      return V.map(function (x, i) { return '<path d="M' + x + ' -20 L' + (x + (i % 2 ? 14 : -10)) + " " + (H + 20) + '"/>'; }).join("") +
+        Hz.map(function (y, i) { return '<path d="M-20 ' + y + " L" + (W + 20) + " " + (y + (i % 2 ? -12 : 8)) + '"/>'; }).join("");
+    }
+    h += '<g stroke="#dde1e6" stroke-width="' + (mob ? 17 : 25) + '" fill="none">' + rues() + "</g>" +
+      '<g stroke="#ffffff" stroke-width="' + (mob ? 12 : 18) + '" fill="none">' + rues() + "</g>" +
+      (mob ? '<path d="M-20 40 L 420 520" stroke="#dde1e6" stroke-width="20" fill="none"/><path d="M-20 40 L 420 520" stroke="#fff6d6" stroke-width="14" fill="none"/>'
+           : '<path d="M-20 980 C 400 760 900 900 1650 620" stroke="#dde1e6" stroke-width="32" fill="none"/><path d="M-20 980 C 400 760 900 900 1650 620" stroke="#fff6d6" stroke-width="26" fill="none"/>' +
+             '<path d="M200 -20 L 1250 940" stroke="#dde1e6" stroke-width="24" fill="none"/><path d="M200 -20 L 1250 940" stroke="#ffffff" stroke-width="18" fill="none"/>');
+    /* la tour Eiffel, comme un monument sur un plan (le logo dit Paris) */
+    var TE = mob ? [345, 520, .62] : [1360, 470, 1.15];
+    h += '<g transform="translate(' + TE[0] + " " + TE[1] + ") scale(" + TE[2] + ')">' +
+      '<ellipse cx="0" cy="2" rx="34" ry="7" fill="rgba(0,0,0,.08)"/>' +
+      '<g fill="#3d4450">' +
+        '<path d="M-1.4 -112 h2.8 v14 h-2.8z"/>' +
+        '<path d="M-4 -98 h8 l3 34 h-14z"/>' +
+        '<path d="M-14 -66 h28 v5 h-28z"/>' +
+        '<path d="M-10 -61 h20 l7 26 h-34z"/>' +
+        '<path d="M-22 -37 h44 v5 h-44z"/>' +
+        '<path d="M-18 -32 h36 l14 32 h-13 c-3 -12 -10 -18 -19 -18 s-16 6 -19 18 h-13z"/>' +
+      "</g>" +
+      '<g transform="translate(0 22)"><rect x="-44" y="-12" width="88" height="24" rx="12" fill="#fff" stroke="#dde1e6"/>' +
+      '<text y="4" text-anchor="middle" font-family="Outfit, sans-serif" font-size="12" font-weight="600" fill="#3d4450">Tour Eiffel</text></g>' +
+      "</g>";
+
+    h += "</g>"; /* fin du plan flouté : l'itinéraire et le logo restent nets */
+    /* itinéraire : liseré blanc + trait rouge qui se dessine */
+    h += '<path d="' + d + '" stroke="#fff" stroke-width="' + (mob ? 14 : 18) + '" fill="none" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<path d="' + d + '" stroke="#e5172f" stroke-width="' + (mob ? 7 : 9) + '" fill="none" stroke-linejoin="round" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="' + (anim ? 1 : 0) + '">' +
+        (anim ? '<animate attributeName="stroke-dashoffset" values="1;0;0" keyTimes="0;.78;1" dur="' + DUR + 's" repeatCount="indefinite"/>' : "") + "</path>";
+    /* arrivée : épingle « Chez toi » */
+    h += '<g transform="translate(' + B[0] + " " + B[1] + ')">' +
+        '<circle r="16" fill="rgba(229,23,47,.18)">' + (anim ? '<animate attributeName="r" values="14;34;14" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0;1" dur="1.8s" repeatCount="indefinite"/>' : "") + '</circle>' +
+        '<g filter="url(#ombre)"><path d="M0 0 C -13 -16 -20 -26 -20 -36 a20 20 0 0 1 40 0 C 20 -26 13 -16 0 0z" fill="#e5172f"/>' +
+        '<path d="M-8 -34 L0 -42 L8 -34 V-26 H-8z" fill="#fff"/></g>' +
+        '<g transform="translate(' + (mob ? "0 -74" : "62 -30") + ')"><rect x="-40" y="-16" width="80" height="28" rx="14" fill="#111"/>' +
+        '<text y="3" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="600" fill="#fff">Chez toi</text></g></g>';
+    /* le logo SOS Phone qui roule */
+    h += '<g filter="url(#ombre)">' +
+        (anim ? '<animateMotion path="' + d + '" keyPoints="0;1;1" keyTimes="0;.78;1" calcMode="linear" dur="' + DUR + 's" repeatCount="indefinite"/>' : "") +
+        '<g' + (anim ? "" : ' transform="translate(' + B[0] + " " + B[1] + ')"') + '>' +
+        '<circle r="31" fill="#fff"/><circle r="31" fill="none" stroke="#e5172f" stroke-width="3"/><image href="' + logo + '" x="-25" y="-25" width="50" height="50" clip-path="url(#clipLogo)" preserveAspectRatio="xMidYMid slice"/>' +
+        '<g transform="translate(0 -54)"><rect x="-48" y="-15" width="96" height="30" rx="15" fill="#e5172f"/>' +
+        '<text y="4" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="600" fill="#fff" letter-spacing=".5">J\'ARRIVE</text></g>' +
+        "</g></g>";
+    return h + "</svg>";
+  }
+
   /* Démo du héros : le téléphone tombe en panne, puis il est réparé. */
   var heroT = null;
   SCREENS.home.after = function () {
@@ -364,44 +492,93 @@ function dessinTelephone(nom) {
     }
     heroT = setTimeout(etape, 700);
   };
-  ACTS.startPanne = function (id) { reset(); S.pre = id; go("modele"); };
-  ACTS.start = function () { reset(); go("modele"); };
+  ACTS.startPanne = function (id) { reset(); S.pre = id; go("marque"); };
+  ACTS.start = function () { reset(); go("marque"); };
+
+  /* ── Étape 1 : la marque. iPhone = prix fixes ; les autres = on décrit la panne. ── */
+  var MARQUES = [
+    { id: "apple", nom: "iPhone", s: "Prix fixe tout de suite" },
+    { id: "samsung", nom: "Samsung" }, { id: "google", nom: "Google Pixel" }, { id: "xiaomi", nom: "Xiaomi" },
+    { id: "huawei", nom: "Huawei" }, { id: "oppo", nom: "Oppo" }, { id: "oneplus", nom: "OnePlus" },
+    { id: "honor", nom: "Honor" }, { id: "motorola", nom: "Motorola" }, { id: "autre", nom: "Autre marque" }
+  ];
+  var MARQUES_BASE = PHOTOS_BASE.replace(/photos\/$/, "") + "marques/";
+  SCREENS.marque = function () {
+    var again = S.phones.length > 0;
+    return '<p class="step">Étape 1 sur 4' + (again ? " · Téléphone " + (S.phones.length + 1) : "") + '</p>' +
+      '<h1 class="h1">Quelle marque ?</h1>' +
+      '<p class="sub">iPhone : ton prix tout de suite. Autres marques : décris la panne, on te chiffre vite.</p>' +
+      '<div class="marques">' + MARQUES.map(function (b) {
+        var logo = b.id === "autre"
+          ? '<span class="marque-q">?</span>'
+          : '<img src="' + MARQUES_BASE + b.id + '.svg" alt="" width="40" height="40">';
+        if (b.id === "apple") {
+          return '<button class="marque-iphone" data-act="marque" data-v="apple">' +
+            '<span class="mi-txt"><span class="mi-logo"><img src="' + MARQUES_BASE + 'apple.svg" alt="" width="26" height="26">iPhone</span>' +
+            '<span class="mi-t">Ton prix fixe,<br>tout de suite</span>' +
+            '<span class="mi-go">Choisir mon iPhone <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span>' +
+            '<span class="mi-photos" aria-hidden="true">' + ["15", "16", "17pro"].map(function (k) {
+              return '<img src="' + PHOTOS_BASE + "dos/" + k + '.webp" alt="" loading="lazy">';
+            }).join("") + "</span></button>";
+        }
+        return '<button class="marque" data-act="marque" data-v="' + b.id + '">' +
+          '<span class="marque-logo">' + logo + '</span><span class="marque-n">' + esc(b.nom) + '</span>' +
+          (b.s ? '<span class="marque-s">' + esc(b.s) + "</span>" : "") + "</button>";
+      }).join("").replace('</button><button class="marque"', '</button><p class="marques-autres">Autres marques · sur devis</p><button class="marque"') + "</div>";
+  };
+  ACTS.marque = function (id) {
+    if (id === "apple") return go("modele");
+    var b = MARQUES.filter(function (x) { return x.id === id; })[0];
+    var autre = MODELES[MODELES.length - 1];
+    newPhone(autre);
+    S.cur.marque = id === "autre" ? "" : b.nom;
+    S.cur.modelText = S.cur.marque ? S.cur.marque + " " : "";
+    S.cur.items = [{ id: "autre", famille: "Réparation", titre: "À chiffrer", prix: null, garantie: GARANTIES.defaut }];
+    go("desc");
+  };
 
   /* ── Étape 1 : modèle ── */
   SCREENS.modele = function () {
-    var again = S.phones.length > 0;
-    return '<p class="step">Étape 1 sur 4' + (again ? " · Téléphone " + (S.phones.length + 1) : "") + '</p>' +
-      '<h1 class="h1">Quel modèle ?</h1>' +
-      '<p class="sub">Réglages → Général → Informations si tu n\'es pas sûr.</p>' +
+    var again = S.phones.length > 0, series = [];
+    MODELES.forEach(function (m) { if (!m.devis && series.indexOf(m.serie) < 0) series.push(m.serie); });
+    if (!S.serie) S.serie = "tous";
+    return '<div class="mod-tete"><div><p class="step">Étape 1 sur 4' + (again ? " · Téléphone " + (S.phones.length + 1) : "") + '</p>' +
+      '<h1 class="h1">Quel iPhone ?</h1>' +
+      '<p class="sub">Pas sûr ? Réglages → Général → Informations.</p></div>' +
       '<label class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
-      '<input id="q" type="search" placeholder="Rechercher : 13 Pro, 16e…" autocomplete="off" enterkeyhint="search" aria-label="Rechercher un modèle"></label>' +
-      '<div id="models"></div>';
+      '<input id="q" type="search" placeholder="Rechercher : 13 Pro, 16e…" autocomplete="off" enterkeyhint="search" aria-label="Rechercher un modèle"></label></div>' +
+      '<div class="series" role="tablist" aria-label="Série">' +
+        '<button class="serie-b" role="tab" data-act="serie" data-v="tous">Tous</button>' +
+        series.map(function (x) {
+          return '<button class="serie-b" role="tab" data-act="serie" data-v="' + esc(x) + '">' + esc(x.replace(/^iPhone /, "").replace(" et plus ancien", " et avant")) + "</button>";
+        }).join("") +
+      "</div>" +
+      '<div id="models" class="modeles"></div>';
   };
+  function dessineModeles() {
+    var q = document.getElementById("q"); if (!q) return;
+    var v = norm(q.value), h = "", serie = null, n = 0, f = v ? "tous" : S.serie;
+    Array.prototype.forEach.call(document.querySelectorAll(".serie-b"), function (b) { b.setAttribute("aria-selected", b.getAttribute("data-v") === f); });
+    MODELES.forEach(function (m, i) {
+      if (m.devis) return;
+      if (f !== "tous" && m.serie !== f) return;
+      var hay = norm(m.nom), words = v.split(" ");
+      if (v && !words.every(function (w) { return hay.indexOf(w) > -1; })) return;
+      serie = m.serie;
+      h += '<button class="chip phone" data-act="model" data-v="' + i + '">' + visuelTelephone(m.nom) +
+        '<span class="phone-n"><small>iPhone</small>' + esc(m.nom.replace(/^iPhone /, "")) + "</span></button>";
+      n++;
+    });
+    if (!n && v) h += '<p class="empty">Pas trouvé ? Reviens en arrière et choisis « Autre marque » : on le chiffre à la main.</p>';
+    document.getElementById("models").innerHTML = h;
+  }
   SCREENS.modele.after = function () {
-    var q = document.getElementById("q");
-    function draw() {
-      var v = norm(q.value), h = "", serie = null, open = false, n = 0;
-      MODELES.forEach(function (m, i) {
-        if (m.devis) return;
-        var hay = norm(m.nom), words = v.split(" ");
-        if (v && !words.every(function (w) { return hay.indexOf(w) > -1; })) return;
-        if (m.serie !== serie) {
-          if (open) h += "</div>";
-          h += '<p class="serie">' + esc(m.serie) + '</p><div class="grid">'; serie = m.serie; open = true;
-        }
-        h += '<button class="chip phone" data-act="model" data-v="' + i + '">' + visuelTelephone(m.nom) +
-          '<span class="phone-n"><small>iPhone</small>' + esc(m.nom.replace(/^iPhone /, "")) + "</span></button>";
-        n++;
-      });
-      if (open) h += "</div>";
-      if (!n) h += '<p class="empty">Pas trouvé ? Pas de souci, on le chiffre à la main.</p>';
-      var autre = MODELES.length - 1;
-      h += '<p class="serie">Autre</p><div class="grid"><button class="chip wide phone-row" data-act="model" data-v="' + autre + '">' + visuelTelephone("Un autre modèle") +
-        '<span><b>Un autre modèle</b><small>Samsung, Xiaomi, Google Pixel…</small></span></button></div>';
-      document.getElementById("models").innerHTML = h;
-    }
-    q.addEventListener("input", draw);
-    draw();
+    document.getElementById("q").addEventListener("input", dessineModeles);
+    dessineModeles();
+  };
+  ACTS.serie = function (v) {
+    S.serie = v; var q = document.getElementById("q"); q.value = "";
+    dessineModeles();
   };
   ACTS.model = function (i) {
     var m = MODELES[+i];
@@ -412,6 +589,12 @@ function dessinTelephone(nom) {
       go("desc");
     } else go("pannes");
   };
+
+  /* Remise (en %) à partir de N réparations, lue dans REMISES (modifiable dans WordPress). */
+  function pct(n) {
+    var r = REMISES.filter(function (x) { return x.aPartirDe === n; })[0];
+    return r ? Math.round(r.taux * 100) : 0;
+  }
 
   /* ── Scène en tête d'écran : le téléphone choisi + la panne en cours ── */
   function stage(nom, id, etape, collant) {
@@ -425,10 +608,10 @@ function dessinTelephone(nom) {
     ids = (ids == null ? [] : [].concat(ids)).filter(function (id) { return FX[id]; });
     jouerPanne(sc, ids);
     var t = document.getElementById("stageT"), st = document.getElementById("stageS");
-    if (!ids.length) { t.textContent = "Qu'est-ce qui ne va pas ?"; st.textContent = "Touche une panne : ton téléphone te la montre."; return; }
+    if (!ids.length) { t.textContent = "Qu'est-ce qui ne va pas ?"; st.textContent = "Touche une panne : ton téléphone te la montre."; return; }
     t.innerHTML = ids.map(function (id) { return '<span class="stage-p">' + esc(FX[id].t) + "</span>"; }).join('<span class="stage-plus">+</span>');
     st.textContent = ids.length === 1 ? FX[ids[0]].s
-      : ids.length + " réparations en une seule visite · −20 % sur la 2e, −30 % sur les suivantes.";
+      : ids.length + " réparations en une seule visite · −" + pct(2) + " % sur la 2e, −" + pct(3) + " % sur les suivantes.";
   }
   /* Après chaque écran : si une scène est là, elle joue sa panne. */
   var STAGE_PANNE = null;
@@ -438,9 +621,9 @@ function dessinTelephone(nom) {
     var c = S.cur;
     STAGE_PANNE = c.sel.slice();
     return stage(c.m.nom, c.sel[c.sel.length - 1], "Étape 2 sur 4", true) +
-      '<h1 class="h1">Qu\'est-ce qu\'il faut réparer ?</h1>' +
+      '<h1 class="h1">Qu\'est-ce qu\'il faut réparer ?</h1>' +
       '<p class="sub">Coche tout ce qui ne va pas : ton téléphone te le montre.</p>' +
-      '<p class="note">Tu peux en choisir plusieurs — <b>−20 %</b> sur ta 2<sup>e</sup> réparation, <b>−30 %</b> sur les suivantes.</p>' +
+      '<p class="note">Tu peux en choisir plusieurs — <b>−' + pct(2) + ' %</b> sur ta 2<sup>e</sup> réparation, <b>−' + pct(3) + ' %</b> sur les suivantes.</p>' +
       '<div class="opts">' + PANNES.map(function (p) {
         var on = c.sel.indexOf(p.id) > -1;
         return '<button class="opt" data-act="panne" data-v="' + p.id + '" aria-pressed="' + on + '">' +
@@ -487,20 +670,23 @@ function dessinTelephone(nom) {
       var id = c.queue[c.qi++];
       switch (id) {
         case "ecran":
+          if (extras(id, m).length) return go("gamme", { type: id });
           if (!m.ecran) { devisItem(id); break; }
           if (m.ecran.unique) { addItem(id, "Écran", m.ecran.unique, GARANTIES.defaut); break; }
           return go("gamme", { type: "ecran" });
         case "batterie":
-          if (typeof m.batterieFixe === "number") { addItem(id, "Batterie", m.batterieFixe); break; }
+          if (typeof m.batterieFixe === "number" && !extras(id, m).length) { addItem(id, "Batterie", m.batterieFixe); break; }
           return go("gamme", { type: "batterie" });
         case "connecteur":
           return go("conseil");
         case "vitre":
+          if (extras(id, m).length) return go("gamme", { type: id });
           if (m.vitre == null) { devisItem(id); break; }
           if (m.vitreSansLogo) return go("gamme", { type: "vitre" });
           addItem(id, "Vitre arrière d'origine", m.vitre); break;
         case "chassis":
         case "boutons":
+          if (extras(id, m).length) return go("gamme", { type: id });
           if (m[id] == null) devisItem(id); else addItem(id, famille(id), m[id]);
           break;
         case "redemarre":
@@ -510,6 +696,8 @@ function dessinTelephone(nom) {
         case "desoxydation":
           return go("desox");
         default:
+          /* « Autre problème » ou catégorie ajoutée dans WordPress */
+          if (extras(id, m).length) return go("gamme", { type: id });
           devisItem(id);
       }
     }
@@ -519,27 +707,54 @@ function dessinTelephone(nom) {
 
   function finishPhone() {
     S.phones.push(S.cur); S.cur = null;
-    if (S.dep || S.horsZone) go("devis"); else go("dep");
+    if (S.adresse || S.horsZone) go("devis"); else go("adresse");
   }
 
-  /* ── Gammes (écran / batterie / vitre) ── */
+  /* ── Prestations ajoutées dans WordPress (Prix SOS) pour cette catégorie et ce modèle ── */
+  function extras(cat, m) {
+    return (window.SOSP_EXTRAS || []).filter(function (x) {
+      return x.cat === cat && x.prix && typeof x.prix[m.nom] === "number";
+    }).map(function (x) {
+      return { titre: x.titre, detail: x.detail || "", prix: x.prix[m.nom], gamme: x.titre, g: x.garantie != null ? x.garantie : GARANTIES.defaut, extra: true };
+    });
+  }
+
+  /* ── Gammes : les options de base + les prestations ajoutées ── */
   function gammes(type, m) {
+    var G = gammesBase(type, m);
+    G.l = G.l.concat(extras(type, m));
+    return G;
+  }
+  function gammesBase(type, m) {
+    var fam = famille(type);
+    if (type === "vitre" && m.vitre == null) return { t: "Quelle vitre arrière ?", s: "Choisis la pièce qui te convient.", l: [] };
+    if (type === "vitre" && !m.vitreSansLogo) return { t: "Quelle vitre arrière ?", s: "Choisis la pièce qui te convient.",
+      l: [{ titre: "Vitre arrière d'origine", detail: "La pièce d'origine, logo compris.", prix: m.vitre, gamme: "d'origine", best: true, g: GARANTIES.vitre }] };
+    if (type === "batterie" && typeof m.batterieFixe === "number") return { t: "Quelle batterie ?", s: "Choisis la batterie qui te convient.",
+      l: [{ titre: "Batterie", detail: "Batterie neuve, posée chez toi.", prix: m.batterieFixe, gamme: "standard", best: true, g: GARANTIES.batterie }] };
+    if (type === "ecran" && !m.ecran) return { t: "Quel écran ?", s: "Choisis la pièce qui te convient.", l: [] };
+    if (type === "ecran" && m.ecran.unique) return { t: "Quel écran ?", s: "Choisis la pièce qui te convient.",
+      l: [{ titre: "Écran", detail: "Écran neuf, tactile compris.", prix: m.ecran.unique, gamme: "standard", best: true, g: GARANTIES.defaut }] };
+    if (type !== "vitre" && type !== "batterie" && type !== "ecran") {
+      var base = typeof m[type] === "number" ? [{ titre: fam, detail: "La réparation standard.", prix: m[type], gamme: "standard", best: true, g: GARANTIES[type] != null ? GARANTIES[type] : GARANTIES.defaut }] : [];
+      return { t: fam + " : quelle option ?", s: "Choisis la prestation qui te convient.", l: base };
+    }
     if (type === "vitre") return {
-      t: "Quelle vitre arrière ?", s: "Deux fois la même pièce. Le logo gravé au dos fait la différence.",
+      t: "Quelle vitre arrière ?", s: "Deux fois la même pièce. Le logo gravé au dos fait la différence.",
       l: [
         { titre: "Vitre arrière d'origine", detail: "La pièce d'origine, logo compris.", prix: m.vitre, gamme: "d'origine", best: true, g: GARANTIES.vitre },
         { titre: "Vitre arrière sans logo", detail: "Même pièce, sans le logo gravé au dos.", prix: m.vitre - REMISE_SANS_LOGO, gamme: "sans logo", badge: "−" + REMISE_SANS_LOGO + " €", vert: true, g: GARANTIES.vitre }
       ]
     };
     if (type === "batterie") return {
-      t: "Quelle batterie ?", s: "La différence se joue sur l'autonomie et la longévité.",
+      t: "Quelle batterie ?", s: "La différence se joue sur l'autonomie et la longévité.",
       l: BATTERIE.map(function (b) { return { titre: b.titre, detail: b.detail, prix: b.prix, gamme: b.gamme, best: b.best, g: GARANTIES.batterie }; })
     };
     var l = [];
     if (m.ecran.premium != null) l.push({ titre: "Écran premium", detail: "Entrée de gamme. Le choix de la majorité.", prix: m.ecran.premium, gamme: "premium", best: true, badge: "Populaire", g: GARANTIES.ecran_premium });
     l.push({ titre: "Écran " + m.ecran.nomOled, detail: "Le meilleur rapport qualité-prix. Le plus proche de l'original.", prix: m.ecran.oled, gamme: m.ecran.nomOled, best: !l.length, badge: "Recommandé", vert: true, g: GARANTIES.ecran_oled });
     l.push({ titre: "Écran original Apple", detail: "Pièce Apple d'origine. Rendu identique au neuf.", prix: m.ecran.apple, gamme: "original Apple", g: GARANTIES.ecran_apple });
-    return { t: "Quelle qualité d'écran ?", s: "Trois gammes, trois budgets. Toutes posées par un pro.", l: l };
+    return { t: "Quelle qualité d'écran ?", s: "Trois gammes, trois budgets. Toutes posées par un pro.", l: l };
   }
   SCREENS.gamme = function (a) {
     var m = S.cur.m, G = gammes(a.type, m);
@@ -554,18 +769,18 @@ function dessinTelephone(nom) {
           '<span class="opt-g">Garantie ' + x.g + ' mois</span></span>' +
           '<span class="opt-p">' + eur(x.prix) + "</span></button>";
       }).join("") + "</div>" +
-      (a.type === "ecran" ? '<button class="link" data-act="diff" aria-expanded="false">C\'est quoi la différence ?</button><div id="diff" hidden>' + diffHtml(m) + "</div>" : "") +
+      (a.type === "ecran" && m.ecran && !m.ecran.unique ? '<button class="link" data-act="diff" aria-expanded="false">C\'est quoi la différence ?</button><div id="diff" hidden>' + diffHtml(m) + "</div>" : "") +
       '<p class="mini">Prix comprenant la pièce et la main d\'œuvre.</p>';
   };
   ACTS.gammeOk = function (i) {
     var a = hist[hist.length - 1].args, x = gammes(a.type, S.cur.m).l[+i];
-    addItem(a.type, x.titre, x.prix, x.g, { gamme: x.gamme });
+    addItem(a.type, x.titre, x.prix, x.g != null ? x.g : GARANTIES.defaut, { gamme: x.gamme });
     advance();
   };
   ACTS.diff = function (v, b) {
     var d = document.getElementById("diff"), open = d.hidden;
     d.hidden = !open; b.setAttribute("aria-expanded", open);
-    b.textContent = open ? "Masquer la comparaison" : "C'est quoi la différence ?";
+    b.textContent = open ? "Masquer la comparaison" : "C'est quoi la différence ?";
   };
   function diffHtml(m) {
     var a120 = /120\s*Hz/i.test(m.ecran.nomOled || "");
@@ -594,6 +809,7 @@ function dessinTelephone(nom) {
   };
   ACTS.conseilOk = function () {
     var m = S.cur.m;
+    if (extras("connecteur", m).length) return go("gamme", { type: "connecteur" });
     if (m.connecteur == null) devisItem("connecteur"); else addItem("connecteur", "Connecteur de charge", m.connecteur);
     advance();
   };
@@ -643,8 +859,8 @@ function dessinTelephone(nom) {
     var c = S.cur, autre = !!c.m.devis;
     return '<p class="step">Étape 2 sur 4</p><h1 class="h1">Décris-nous le problème</h1>' +
       '<p class="sub">Pas de prix fixe sur ce cas : on te le chiffre à la main, rapidement.</p>' +
-      (autre ? '<label class="label" for="mt">Quel téléphone ?</label><div class="field"><input id="mt" placeholder="Ex : Samsung Galaxy S23" value="' + esc(c.modelText) + '" autocomplete="off"></div><div class="gap"></div>' : "") +
-      '<label class="label" for="ds">Qu\'est-ce qui ne va pas ?</label>' +
+      (autre ? '<label class="label" for="mt">' + (c.marque ? "Quel " + esc(c.marque) + " ?" : "Quel téléphone ?") + '</label><div class="field"><input id="mt" placeholder="' + (c.marque === "Samsung" ? "Ex : Galaxy S23" : c.marque ? "Ex : le nom du modèle" : "Ex : Samsung Galaxy S23") + '" value="' + esc(c.modelText) + '" autocomplete="off"></div><div class="gap"></div>' : "") +
+      '<label class="label" for="ds">Qu\'est-ce qui ne va pas ?</label>' +
       '<div class="field"><textarea id="ds" placeholder="Ex : la caméra arrière est floue depuis une chute">' + esc(c.desc) + "</textarea></div>" +
       '<div class="cta"><button class="btn btn-dark" id="descGo" data-act="descOk" disabled>Continuer →</button></div>';
   };
@@ -663,7 +879,7 @@ function dessinTelephone(nom) {
 
   /* ── Étape 3 : département ── */
   SCREENS.dep = function () {
-    return '<p class="step">Étape 3 sur 4</p><h1 class="h1">Tu es dans quel département ?</h1>' +
+    return '<p class="step">Étape 3 sur 4</p><h1 class="h1">Tu es dans quel département ?</h1>' +
       '<p class="sub">Le réparateur se déplace chez toi.</p>' +
       '<div class="grid">' + DEPS.map(function (d) {
         return '<button class="chip dep" data-act="dep" data-v="' + d.c + '"><b>' + d.c + "</b><span>" + esc(d.n) + "</span></button>";
@@ -679,7 +895,7 @@ function dessinTelephone(nom) {
 
   SCREENS.horszone = function () {
     return '<p class="step">Étape 3 sur 4</p><h1 class="h1">On ne couvre que l\'Île-de-France</h1>' +
-      '<p class="sub">Nos réparateurs se déplacent uniquement dans les 8 départements franciliens.</p>' +
+      '<p class="sub">Nos réparateurs se déplacent uniquement dans les 8 départements franciliens' + (S.adresse && S.adresse.ville ? ", et " + esc(S.adresse.ville) + " n'en fait pas partie" : "") + '. <button class="link" style="display:inline;margin:0" data-act="back">Corriger l\'adresse</button></p>' +
       '<div class="card"><span class="card-k">📦 Réparation par envoi postal</span>' +
       '<h2 class="h2">On ne se déplace pas chez toi, mais on peut réparer ton téléphone.</h2>' +
       '<p>Tu nous l\'envoies, on le répare, on te le renvoie.</p>' +
@@ -702,10 +918,31 @@ function dessinTelephone(nom) {
   function maintenantParis() {
     try { return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" })); } catch (e) { return new Date(); }
   }
+  /* Jours bloqués / fermés, réglés dans WordPress → Prix SOS (relus en direct). */
+  function iso(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  function estBloque(d) {
+    var D = window.SOSP_DISPO || {};
+    return (D.bloques || []).indexOf(iso(d)) > -1 || (D.fermes || []).indexOf(d.getDay()) > -1;
+  }
+  function majDispo(cb) {
+    if (!CONFIG.WEBHOOK || !window.fetch) return cb && cb(false);
+    fetch(CONFIG.WEBHOOK.replace(/lead\/?$/, "dispo") + (CONFIG.WEBHOOK.indexOf("?") > -1 ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d || !Array.isArray(d.bloques)) return cb && cb(false);
+        var avant = JSON.stringify(window.SOSP_DISPO || {});
+        window.SOSP_DISPO = { bloques: d.bloques, fermes: d.fermes || [] };
+        if (cb) cb(JSON.stringify(window.SOSP_DISPO) !== avant);
+      }).catch(function () { if (cb) cb(false); });
+  }
+  var dispoT = null;
+
   function jours() {
     var n = maintenantParis(), l = [];
-    for (var i = 0; i < NB_JOURS; i++) {
+    for (var i = 0; i < NB_JOURS + 21; i++) {
+      if (l.length >= NB_JOURS) break;
       var d = new Date(n.getFullYear(), n.getMonth(), n.getDate() + i);
+      if (estBloque(d)) continue;
       var h = heures(d, i === 0 ? n : null);
       if (!h.length) continue;
       l.push({ d: d, i: i, h: h,
@@ -726,7 +963,7 @@ function dessinTelephone(nom) {
   SCREENS.urgence = function () {
     var J = jours();
     if (!S.rdv || !J.some(function (j) { return j.i === S.rdv.i; })) S.rdv = { i: J.length ? J[0].i : 0, h: null };
-    return '<p class="step">Étape 4 sur 4</p><h1 class="h1">On passe quand ?</h1>' +
+    return '<p class="step">Étape 4 sur 4</p><h1 class="h1">On passe quand ?</h1>' +
       '<p class="sub">Choisis ton jour et ton heure. On te confirme le créneau sur WhatsApp.</p>' +
       '<div class="jours" role="listbox" aria-label="Jour">' + J.map(function (j) {
         return '<button class="jour" role="option" data-act="jour" data-v="' + j.i + '" aria-selected="' + (S.rdv.i === j.i) + '">' +
@@ -736,7 +973,13 @@ function dessinTelephone(nom) {
       '<div class="cta"><button class="btn btn-dark" id="rdvGo" data-act="rdvOk" disabled>Choisis une heure</button>' +
       '<button class="link" data-act="urg" data-v="info">Je regarde juste le prix</button></div>';
   };
-  SCREENS.urgence.after = function () { dessineHeures(); };
+  SCREENS.urgence.after = function () {
+    dessineHeures();
+    /* En direct : si le gérant bloque un jour pendant que le client regarde, l'écran se met à jour. */
+    function verif() { majDispo(function (change) { if (change && document.getElementById("heures")) rerender(); }); }
+    verif();
+    clearInterval(dispoT); dispoT = setInterval(function () { if (!document.getElementById("heures")) return clearInterval(dispoT); verif(); }, 30000);
+  };
   function dessineHeures() {
     var j = jours().filter(function (x) { return x.i === S.rdv.i; })[0];
     document.getElementById("heures").innerHTML = (j ? j.h : []).map(function (h) {
@@ -752,16 +995,139 @@ function dessinTelephone(nom) {
     dessineHeures();
   };
   ACTS.heure = function (h) { S.rdv.h = +h; dessineHeures(); };
-  ACTS.rdvOk = function () {
-    var j = jours().filter(function (x) { return x.i === S.rdv.i; })[0];
+  ACTS.rdvOk = function (v, b) {
+    /* Dernière vérification en direct avant de réserver */
+    if (b) b.disabled = true;
+    majDispo(function () {
+      var j = jours().filter(function (x) { return x.i === S.rdv.i; })[0];
+      if (!j || j.h.indexOf(S.rdv.h) < 0) { toast("Ce jour n'est plus disponible. Choisis-en un autre."); S.rdv = null; return rerender(); }
+      rdvValide(j);
+    });
+  };
+  function rdvValide(j) {
     S.rdv.texte = j.long + " à " + S.rdv.h + " h";
     S.urgence = { id: "rdv", titre: "RDV souhaité : " + S.rdv.texte, chaud: true };
-    if (S.tel) go("devis"); else go("tel");
+    go("devis");
+  }
+  /* ── Adresse : saisie avec suggestions ──
+     Les adresses viennent de la Base Adresse Nationale (api-adresse.data.gouv.fr),
+     service public gratuit, sans clé. */
+  var BAN = "https://api-adresse.data.gouv.fr/";
+  /* Centre de chaque département : les suggestions proches passent en premier. */
+  var CENTRES = { "75": [48.8566, 2.3522], "77": [48.62, 2.95], "78": [48.81, 1.95], "91": [48.52, 2.25],
+    "92": [48.84, 2.24], "93": [48.91, 2.48], "94": [48.78, 2.47], "95": [49.06, 2.13] };
+  SCREENS.adresse = function () {
+    var a = S.adresse || {};
+    return '<p class="step">Étape 3 sur 4</p>' +
+      '<h1 class="h1">On vient où ?</h1>' +
+      '<p class="sub">Pour que le réparateur arrive directement chez toi.</p>' +
+      '<label class="label" for="adr">Adresse</label>' +
+      '<div class="adr-wrap"><div class="field" id="adrF"><input id="adr" placeholder="Ex : 12 rue de la Paix, Paris" autocomplete="street-address" value="' + esc(a.label || "") + '"><span class="field-ok">✓</span></div>' +
+      '<ul class="sugg" id="sugg" role="listbox" hidden></ul></div>' +
+      '<div class="gap"></div>' +
+      '<label class="label" for="adr2">Bâtiment, étage, code (facultatif)</label>' +
+      '<div class="field"><input id="adr2" placeholder="Ex : bât. B, 3e étage, code 1234A" value="' + esc(a.complement || "") + '" autocomplete="address-line2"></div>' +
+      '<div class="cta"><button class="btn btn-dark" id="adrGo" data-act="adrOk" disabled>Continuer →</button></div>';
   };
+  SCREENS.adresse.after = function () {
+    var inp = document.getElementById("adr"), ul = document.getElementById("sugg"), t = null, res = [];
+    function valide() {
+      var ok = inp.value.trim().length >= 8;
+      document.getElementById("adrGo").disabled = !ok;
+      document.getElementById("adrF").classList.toggle("ok", !!(S.adresse && S.adresse.label === inp.value && S.adresse.ok));
+    }
+    inp.addEventListener("input", function () {
+      S.adresse = { label: inp.value, complement: (S.adresse || {}).complement || "" };
+      valide();
+      clearTimeout(t);
+      var q = inp.value.trim();
+      if (q.length < 4) { ul.hidden = true; return; }
+      t = setTimeout(function () {
+        var ctr = S.dep && CENTRES[S.dep.c] || CENTRES["75"];
+        fetch(BAN + "search/?limit=5&autocomplete=1&lat=" + ctr[0] + "&lon=" + ctr[1] + "&q=" + encodeURIComponent(q))
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            res = (j.features || []);
+            ul.innerHTML = res.map(function (f, i) {
+              return '<li role="option"><button type="button" data-i="' + i + '"><b>' + esc(f.properties.name) + '</b><span>' + esc(f.properties.postcode + " " + f.properties.city) + "</span></button></li>";
+            }).join("");
+            ul.hidden = !res.length;
+          }).catch(function () { ul.hidden = true; });
+      }, 220);
+    });
+    ul.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-i]"); if (!b) return;
+      choisirAdresse(res[+b.getAttribute("data-i")]);
+      ul.hidden = true;
+    });
+    document.addEventListener("click", function cache(e) {
+      if (!document.body.contains(ul)) return document.removeEventListener("click", cache);
+      if (!e.target.closest(".adr-wrap")) ul.hidden = true;
+    });
+    document.getElementById("adr2").addEventListener("input", function (e) { S.adresse = S.adresse || { label: inp.value }; S.adresse.complement = e.target.value; });
+    valide();
+  };
+  function choisirAdresse(f) {
+    var p = f.properties, c = f.geometry && f.geometry.coordinates;
+    var inp = document.getElementById("adr");
+    S.adresse = { label: p.label, cp: p.postcode, ville: p.city, ok: true,
+      lat: c ? c[1] : null, lon: c ? c[0] : null, complement: (S.adresse || {}).complement || "" };
+    if (inp) { inp.value = p.label; inp.dispatchEvent(new Event("change")); }
+    document.getElementById("adrGo").disabled = false;
+    document.getElementById("adrF").classList.add("ok");
+  }
+  ACTS.position = function (v, b) {
+    var msg = document.getElementById("posMsg");
+    if (!navigator.geolocation) { msg.textContent = "Ton téléphone ne permet pas d'envoyer ta position. Tape ton adresse."; return; }
+    b.disabled = true; b.querySelector("span").textContent = "Recherche de ta position…"; msg.textContent = "";
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      var lat = pos.coords.latitude, lon = pos.coords.longitude;
+      fetch(BAN + "reverse/?lat=" + lat + "&lon=" + lon)
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          var f = (j.features || [])[0];
+          if (f) { choisirAdresse(f); S.adresse.lat = lat; S.adresse.lon = lon; S.adresse.gps = true; }
+          else {
+            S.adresse = { label: "Position GPS (" + lat.toFixed(5) + ", " + lon.toFixed(5) + ")", lat: lat, lon: lon, gps: true, ok: true, complement: "" };
+            document.getElementById("adr").value = S.adresse.label; document.getElementById("adrGo").disabled = false;
+          }
+          b.querySelector("span").textContent = "Position envoyée ✓"; b.classList.add("ok"); b.disabled = false;
+          msg.textContent = "Vérifie l'adresse et ajoute l'étage ou le code si besoin.";
+        })
+        .catch(function () {
+          b.disabled = false; b.querySelector("span").textContent = "Envoyer ma position";
+          msg.textContent = "Impossible de trouver l'adresse. Tape-la à la main.";
+        });
+    }, function () {
+      b.disabled = false; b.querySelector("span").textContent = "Envoyer ma position";
+      msg.textContent = "Position refusée ou introuvable. Tape ton adresse à la main.";
+    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+  };
+  ACTS.adrOk = function () {
+    var v = document.getElementById("adr").value.trim();
+    if (!S.adresse || S.adresse.label !== v) S.adresse = { label: v, complement: (S.adresse || {}).complement || "" };
+    S.adresse.complement = document.getElementById("adr2").value.trim();
+    var cp = S.adresse.cp || ((S.adresse.label.match(/\b(\d{5})\b/) || [])[1]) || "";
+    /* On se déplace partout : toutes les adresses sont acceptées. */
+    var d2 = cp ? (/^97/.test(cp) ? cp.slice(0, 3) : cp.slice(0, 2)) : "";
+    var idf = DEPS.filter(function (d) { return d.c === d2; })[0];
+    S.dep = d2 ? { c: d2, n: idf ? idf.n : (S.adresse.ville || "") } : null;
+    S.horsZone = false;
+    go("urgence");
+  };
+  function adresseTexte() {
+    if (!S.adresse || !S.adresse.label) return "";
+    return S.adresse.label + (S.adresse.complement ? " (" + S.adresse.complement + ")" : "");
+  }
+  function carteUrl() {
+    var a = S.adresse; if (!a) return "";
+    return a.lat != null ? "https://maps.google.com/?q=" + a.lat + "," + a.lon : "https://maps.google.com/?q=" + encodeURIComponent(a.label);
+  }
+
   ACTS.urg = function (id) {
     S.urgence = URGENCES.filter(function (u) { return u.id === id; })[0];
     S.rdv = null;
-    if (S.tel) go("devis"); else go("tel");
+    go("devis");
   };
 
   /* ── Numéro, juste avant le devis ── */
@@ -840,7 +1206,7 @@ function dessinTelephone(nom) {
       });
     });
     var devis = lines.some(function (l) { return l.base == null; });
-    var count = lines.filter(function (l) { return l.it.id !== "diagnostic"; }).length;
+    var count = lines.filter(function (l) { return l.it.id !== "diagnostic" && l.it.id !== "deplacement"; }).length;
     var taux = 0;
     if (!devis) for (var i = 0; i < REMISES.length; i++) if (count >= REMISES[i].aPartirDe) { taux = REMISES[i].taux; break; }
     if (taux) {
@@ -851,7 +1217,7 @@ function dessinTelephone(nom) {
     lines.forEach(function (l) { if (l.base != null) { full += l.base; total += l.final; } });
     var promo = 0;
     if (S.promo && !devis) promo = Math.round(total * S.promo.taux * 100) / 100;
-    var next = devis ? null : (count + 1 >= 3 ? 0.30 : 0.20);
+    var next = devis ? null : pct(count + 1 >= 3 ? 3 : 2) / 100;
     return { lines: lines, devis: devis, count: count, full: full, sub: total, promo: promo, total: total - promo, nextTaux: next };
   }
 
@@ -884,10 +1250,14 @@ function dessinTelephone(nom) {
           (l.base == null ? "Devis" : (l.final !== l.base ? "<s>" + eur(l.base) + "</s>" : "") + eur(l.final)) + "</span></li>";
       });
     });
+    R.lines.filter(function (l) { return l.pi < 0; }).forEach(function (l) {
+      h += '<li><span><span class="l-t">' + esc(l.it.titre) + '</span><span class="l-s">Selon ton département</span></span><span class="l-p">' + eur(l.final) + "</span></li>";
+    });
     if (R.promo) h += '<li><span><span class="l-t">Code ' + esc(S.promo.code) + '</span><span class="l-s">−' + Math.round(S.promo.taux * 100) + ' % sur le total</span></span><span class="l-p">−' + eur(R.promo) + "</span></li>";
     h += "</ul>";
     var origine = S.phones.some(function (p) { return p.items.some(function (x) { return ORIGINE_UNIQUEMENT.indexOf(x.id) > -1; }); });
     if (origine && !S.horsZone) h += '<p class="quote-foot">' + esc(MENTION_ORIGINE) + "</p>";
+    h += '<p class="quote-foot deplac">🚗 Frais de déplacement : on te les indique sur WhatsApp.</p>';
     h += "</div>";
 
     if (!S.horsZone || true) {
@@ -910,16 +1280,18 @@ function dessinTelephone(nom) {
     } else {
       var hot = !S.urgence || S.urgence.chaud;
       h += (S.rdv && S.rdv.texte
-        ? '<div class="promise"><span class="dot"></span><span><b>Ton créneau : ' + esc(S.rdv.texte) + "</b><br>On te le confirme sur WhatsApp au " + esc(S.tel ? S.tel.affiche : "") + (S.dep ? ", réparateur dans le " + S.dep.c : "") + '. <button class="link" style="display:inline;margin:0" data-act="changerRdv">Changer</button></span></div>'
+        ? '<div class="promise"><span class="dot"></span><span><b>Ton créneau : ' + esc(S.rdv.texte) + "</b><br>" + (adresseTexte() ? "📍 " + esc(adresseTexte()) + "<br>" : "") + "On te le confirme sur WhatsApp. " + '<button class="link" style="display:inline;margin:0" data-act="changerRdv">Changer</button></span></div>'
         : '<div class="promise"><span class="dot"></span><span><b>' +
-        (enHeuresAppel() ? "Prise de RDV en moins de 10 min" : "Prise de RDV dès " + CONFIG.HEURE_DEBUT_APPEL + "h") +
-        "</b><br>On t'appelle au " + esc(S.tel ? S.tel.affiche : "") + " pour caler ton créneau" + (S.dep ? " dans le " + S.dep.c : "") + ".</span></div>") +
+        "Ton prix est prêt" +
+        "</b><br>On cale ton créneau ensemble sur WhatsApp.</span></div>") +
         '<div class="cta"><p class="cta-info">🔒 Ton prix est bloqué 7 jours · code <b>' + esc(S.code) + "</b></p>" +
-        '<button class="btn ' + (hot ? "btn-yellow" : "btn-dark") + '" data-act="confirm">' + (hot ? (S.rdv && S.rdv.texte ? "Réserver " + S.rdv.texte : "Prendre mon RDV") : "Bloquer mon prix 7 jours") + "</button></div>";
+        '<button class="btn ' + (hot ? "btn-yellow" : "btn-dark") + ' btn-resa" data-act="confirm">' + WA_ICO + "<span>" + (hot ? "Réserver sur WhatsApp" : "Recevoir mon devis sur WhatsApp") + "</span></button>" +
+        '<p class="mini">WhatsApp s\'ouvre avec ta demande déjà écrite : tu n\'as plus qu\'à l\'envoyer.</p>' +
+        '<button class="rappel-lien" data-act="rappel">' + TEL_ICO + '<span>Je préfère être rappelé</span></button></div>';
     }
     return h;
   };
-  ACTS.addPhone = function () { go("modele"); };
+  ACTS.addPhone = function () { go("marque"); };
   ACTS.changerRdv = function () { go("urgence"); };
   ACTS.promoOpen = function (v, b) {
     var p = document.getElementById("promo"); p.hidden = false; b.hidden = true;
@@ -936,22 +1308,54 @@ function dessinTelephone(nom) {
   function rerender() { var top = hist[hist.length - 1]; go(top.name, top.args, true); }
 
   ACTS.confirm = function () {
-    sendLead(S.horsZone ? "envoi_postal" : "rdv");
+    sendLead(S.horsZone ? "envoi_postal" : (S.rdv ? "rdv" : "devis"));
+    if (!S.horsZone && CONFIG.WHATSAPP) {
+      var u = waUrl(), w = null;
+      try { w = window.open(u, "_blank"); } catch (e) {}
+      if (!w) { location.href = u; }
+    }
     go(S.horsZone ? "postal" : "done");
+  };
+
+  /* ── Demande de rappel : enregistrée + message WhatsApp prêt à envoyer ── */
+  function rappelTexte() {
+    if (!S.code) S.code = "SOS-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+    var l = ["Bonjour SOS Phone, pouvez-vous me rappeler sur ce numéro ? (" + S.code + ")"];
+    S.phones.forEach(function (p) {
+      var nom = p.m.devis ? (p.modelText || "Autre modèle") : p.m.nom;
+      l.push("📱 " + nom + (p.items.length ? " : " + p.items.map(function (it) { return it.famille; }).join(", ") : ""));
+    });
+    if (S.phones.length) { var R = compute(); if (!R.devis && R.total) l.push("💶 Prix affiché : " + eur(R.total)); }
+    if (adresseTexte()) l.push("📍 " + adresseTexte());
+    return l.join("\n");
+  }
+  function rappelUrl() { return "https://wa.me/" + CONFIG.WHATSAPP + "?text=" + encodeURIComponent(rappelTexte()); }
+  ACTS.rappel = function () {
+    sendLead("rappel");
+    if (CONFIG.WHATSAPP) {
+      var u = rappelUrl(), w = null;
+      try { w = window.open(u, "_blank"); } catch (e) {}
+      if (!w) { location.href = u; }
+    }
+    go("rappel");
+  };
+  SCREENS.rappel = function () {
+    return '<div class="done"><div class="done-ico wa">' + WA_ICO.replace('width="22" height="22"', 'width="46" height="46"') + '</div>' +
+      '<h1 class="h1">Envoie le message, on te rappelle</h1>' +
+      '<p class="sub">Ta demande de rappel est écrite dans WhatsApp. Appuie sur envoyer : on t\'appelle sur ce numéro' +
+      (enHeuresAppel() ? " dès que possible." : ", dès " + CONFIG.HEURE_DEBUT_APPEL + " h.") + '</p>' +
+      (CONFIG.WHATSAPP ? '<a class="btn btn-wa" href="' + esc(rappelUrl()) + '" target="_blank" rel="noopener">' + WA_ICO + " Rouvrir WhatsApp</a>" : "") +
+      '<button class="btn btn-ghost" data-act="start">Retour à l\'accueil</button></div>';
   };
 
   /* ── Confirmations ── */
   var CHECK = '<svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   SCREENS.done = function () {
-    return '<div class="done"><div class="done-ico">' + CHECK + '</div>' +
-      '<h1 class="h1">C\'est noté</h1>' +
-      (S.rdv && S.rdv.texte
-        ? '<p class="sub">Créneau demandé : <b>' + esc(S.rdv.texte) + '</b>. On te le confirme sur WhatsApp.</p>'
-        : '<p class="sub">On t\'appelle pour caler ton créneau.</p>') +
-      (CONFIG.NUMERO_APPEL ? '<p class="step">L\'appel viendra du</p><div class="callnum">' + esc(CONFIG.NUMERO_APPEL) + '</div><p><b>Décroche, c\'est nous !</b></p>' : "") +
-      '<p class="sub">Garde ton code : <span class="code">' + esc(S.code) + "</span></p>" +
-      '<p class="sub">Ton prix ne bouge pas : pièce et main d\'œuvre comprises, valable 7 jours.</p>' +
-      waLink() + igLink() +
+    return '<div class="done"><div class="done-ico wa">' + WA_ICO.replace('width="22" height="22"', 'width="46" height="46"') + '</div>' +
+      '<h1 class="h1">Envoie le message</h1>' +
+      '<p class="sub">Ta demande est écrite dans WhatsApp' + (S.rdv && S.rdv.texte ? ", créneau <b>" + esc(S.rdv.texte) + "</b>" : "") + '. Appuie sur envoyer, on te répond vite.</p>' +
+      waLink() +
+      '<p class="sub" style="margin-top:18px">Ton code : <span class="code">' + esc(S.code) + "</span></p>" +
       '<button class="btn btn-ghost" data-act="start">Faire un autre devis</button></div>';
   };
   SCREENS.postal = function () {
@@ -974,21 +1378,24 @@ function dessinTelephone(nom) {
     return '<a class="btn btn-ghost" href="' + igUrl() + '" target="_blank" rel="noopener">' + IG_ICO + ' Suis-nous sur Instagram</a>';
   }
   function waTexte() {
+    if (!S.code) S.code = "SOS-" + Math.random().toString(36).slice(2, 6).toUpperCase();
     var R = compute(), l = ["Bonjour SOS Phone, voici ma demande (" + S.code + ") :"];
     S.phones.forEach(function (p) {
       l.push("📱 " + (p.m.devis ? (p.modelText || "Autre modèle") : p.m.nom) + " : " +
-        p.items.map(function (it) { return it.famille + (it.gamme ? " " + it.gamme : ""); }).join(", "));
+        p.items.map(function (it) { return it.famille + (it.gamme ? " — " + it.gamme : ""); }).join(", "));
       if (p.desc) l.push("   « " + p.desc + " »");
     });
+    l.push("🚗 Frais de déplacement : à me confirmer");
     l.push("💶 " + (R.devis ? "À chiffrer" + (R.total ? " (+ " + eur(R.total) + " déjà chiffrés)" : "") : eur(R.total)));
     if (S.rdv && S.rdv.texte) l.push("📅 " + S.rdv.texte.charAt(0).toUpperCase() + S.rdv.texte.slice(1));
-    if (S.dep) l.push("📍 " + S.dep.c + " " + S.dep.n);
+    if (adresseTexte()) l.push("📍 " + adresseTexte() + "\n" + carteUrl());
+    else if (S.dep) l.push("📍 " + S.dep.c + " " + S.dep.n);
     return l.join("\n");
   }
+  function waUrl() { return "https://wa.me/" + CONFIG.WHATSAPP + "?text=" + encodeURIComponent(waTexte()); }
   function waLink() {
     if (!CONFIG.WHATSAPP) return "";
-    return '<a class="btn btn-wa" href="https://wa.me/' + esc(CONFIG.WHATSAPP) +
-      "?text=" + encodeURIComponent(waTexte()) + '" target="_blank" rel="noopener">' + WA_ICO + " Confirmer sur WhatsApp</a>";
+    return '<a class="btn btn-wa" href="' + esc(waUrl()) + '" target="_blank" rel="noopener">' + WA_ICO + " Rouvrir WhatsApp</a>";
   }
   var WA_ICO = '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>';
 
@@ -1000,6 +1407,7 @@ function dessinTelephone(nom) {
       date: new Date().toISOString(), etape: etape, code: S.code,
       telephone: S.tel ? S.tel.e164 : "", departement: S.dep ? S.dep.c + " " + S.dep.n : (S.horsZone ? "Hors IDF (envoi postal)" : ""),
       urgence: S.urgence ? S.urgence.titre : "",
+      adresse: adresseTexte(), carte: S.adresse ? carteUrl() : "",
       telephones: S.phones.map(function (p) {
         return { modele: p.m.devis ? p.modelText : p.m.nom, description: p.desc,
           reparations: p.items.map(function (it) { return { panne: it.famille, gamme: it.gamme || "", prix: it.prix }; }) };
@@ -1020,5 +1428,6 @@ function dessinTelephone(nom) {
     if (e.key === "Escape" && !$back.hidden) back();
   });
   reset();
+  enteteReseaux(); majStatut(); setInterval(majStatut, 60000);
   go("home");
 })();

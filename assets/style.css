@@ -304,8 +304,28 @@ a:hover { text-decoration: underline; }
 .ig-t { display: block; font-weight: 600; font-size: 17px; }
 
 /* ── Divers ──────────────────────────────── */
-.foot { font-size: 12px; color: var(--ink-3); text-align: center; padding: 22px 0 6px; line-height: 1.6; }
-.foot p { margin: 2px 0; }
+/* ═══ Footer ═══ */
+.foot { position: relative; z-index: 1; margin: 56px calc(-1 * clamp(16px, 4vw, 48px)) 0; padding: 36px clamp(16px, 4vw, 48px) calc(18px + env(safe-area-inset-bottom));
+  background: var(--surface); border-top: .5px solid var(--line); font-size: 14px; line-height: 1.5; color: var(--ink-2); text-align: left; }
+.foot p { margin: 0; }
+.foot-in { display: grid; gap: 28px; max-width: 1144px; margin: 0 auto; }
+.foot-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 10px !important; font: 500 18px/1 var(--font-d); color: var(--ink); }
+.foot-logo img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.foot-logo b { color: var(--yellow); font-weight: 600; }
+.foot-marque > p:last-child { max-width: 30ch; }
+.foot-t { font: 500 12px/1 var(--font-d); text-transform: uppercase; letter-spacing: .06em; color: var(--ink); margin-bottom: 12px !important; }
+.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.foot-liens a, .foot-liens button { display: inline-flex; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; align-items: center; gap: 9px; color: var(--ink-2); text-decoration: none; min-height: 28px; }
+.foot-liens a:hover, .foot-liens button:hover { color: var(--ink); }
+.foot-liens svg { width: 17px; height: 17px; flex: none; }
+.foot-bas { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; max-width: 1144px; margin: 30px auto 0;
+  padding-top: 16px; border-top: .5px solid var(--line); font-size: 12px; color: var(--ink-3); }
+.foot-bas a { color: inherit; }
+.foot-artisan { display: inline-flex; align-items: center; gap: 5px; text-decoration: none; opacity: .75; }
+.foot-artisan:hover { opacity: 1; color: var(--ink-2); }
+@media (min-width: 760px) {
+  .foot-in { grid-template-columns: 1.4fr 1fr 1.2fr; gap: 40px; }
+}
 .toast {
   position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%);
   background: var(--glass); color: var(--ink); padding: 12px 18px; border-radius: 99px; font-size: 15px; font-weight: 500;
@@ -640,3 +660,401 @@ html, body.sosp-plein-ecran, .sosp-root { background: #ffffff !important; }
 .scr > .fx-ink, .scr > .fx-flash { z-index: 0; }
 .scr > .fx-batt, .scr > .fx-pc, .scr > .fx-bolt, .scr > .fx-txt, .scr > .fx-q { z-index: 3; }
 .jours { scroll-padding-left: 16px; }
+
+/* ═══ Polices de limitlesswash.fr : Outfit (titres fins, boutons, étiquettes) + DM Sans (texte) ═══ */
+:root {
+  --font: "DM Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
+  --font-d: "Outfit", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
+}
+body, .sosp-root, body.sosp-plein-ecran { font-family: var(--font); font-weight: 400; letter-spacing: 0; }
+.h1, .h2, .hero-t, .sec-t, .stage-t, .loupe-t, .choice-t, .quote-total, .callnum, .dep b, .jour-n, .logo-phone, .opt-p, .opt-t, .liste-t, .phone-n {
+  font-family: var(--font-d); }
+.h1, .hero-t, .sec-t, .stage-t { font-weight: 300; letter-spacing: -.025em; }
+.btn, .heure, .badge { font-family: var(--font-d); font-weight: 500; letter-spacing: .03em; text-transform: uppercase; }
+.btn { font-size: 15px; }
+.step, .serie, .label, .card-k, .choice-tag, .quote-k, .jour-k, .cta-info, .top-zone, .top-back {
+  font-family: var(--font-d); text-transform: uppercase; letter-spacing: .06em; font-size: 12px; font-weight: 500; }
+.top-back { font-size: 14px; }
+.phone-n small { font-family: var(--font); }
+.sosp-root .h1, .sosp-root .h2, .sosp-root .hero-t, .sosp-root .sec-t, .sosp-root .stage-t, .sosp-root .choice-t, .sosp-root .quote-total,
+.sosp-root .callnum, .sosp-root .logo-phone, .sosp-root .opt-t, .sosp-root .liste-t, .sosp-root .phone-n, .sosp-root .step, .sosp-root .serie,
+.sosp-root .label, .sosp-root .jour-n, .sosp-root .jour-k, .sosp-root .cta-info, .sosp-root .hero-cap { font-family: var(--font-d); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCUEIL SOS : un seul écran, comme une web app.
+   Titre, téléphone en alerte, et le gros bouton « Voir mon prix ».
+   ═══════════════════════════════════════════════════════════════ */
+.screen:has(.sos-hero) { max-width: none; }
+.sosp-accueil .view { padding: 0; }
+.sosp-accueil .app { padding-bottom: 0; }
+.sos-hero { display: flex; flex-direction: column; align-items: center; text-align: center;
+  min-height: calc(100dvh - 60px - env(safe-area-inset-top)); padding-top: 22px; }
+.admin-bar .sos-hero { min-height: calc(100dvh - 60px - 46px); }
+.sosp-root .sos-t { font: 300 clamp(36px, 10.5vw, 76px)/1.04 var(--font-d); letter-spacing: -.03em; margin: 0 0 10px; text-wrap: balance; }
+.sos-t span { color: var(--yellow); }
+.sos-s { color: var(--ink-2); font-size: 17px; line-height: 1.4; margin: 0 auto; max-width: 30ch; }
+
+/* Le téléphone en alerte, avec la sirène qui pulse derrière */
+.sos-visuel { position: relative; flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px 0 6px; min-height: 0; }
+.scene.scene-hero { --h: clamp(220px, 44dvh, 520px); margin: 0; }
+.sirene { position: absolute; left: 50%; top: 47%; width: min(78vw, 520px); aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; }
+.sirene i { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(229,23,47,.55); background: radial-gradient(closest-side, rgba(229,23,47,.10), transparent);
+  opacity: 0; animation: sirene 3s cubic-bezier(.2,.6,.3,1) infinite; }
+.sirene i:nth-child(2) { animation-delay: 1s; } .sirene i:nth-child(3) { animation-delay: 2s; }
+@keyframes sirene { 0% { transform: scale(.35); opacity: 0; } 15% { opacity: 1; } 100% { transform: scale(1.05); opacity: 0; } }
+.sos-visuel .hero-cap { margin: 14px 0 0; font-size: 15px; }
+
+/* Le plus gros bouton de la page, collé en bas comme dans une appli */
+.sos-cta { position: sticky; bottom: 0; z-index: 8; width: calc(100% + 2 * clamp(16px, 4vw, 48px)); margin: 0 calc(-1 * clamp(16px, 4vw, 48px));
+  padding: 14px clamp(16px, 4vw, 48px) calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(rgba(255,255,255,0), #fff 28%); }
+.btn-sos { position: relative; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 68px; border: 0; border-radius: 22px;
+  background: var(--yellow); color: #fff; font: 600 21px/1 var(--font-d); letter-spacing: .04em; text-transform: uppercase;
+  box-shadow: 0 14px 34px -12px rgba(229,23,47,.75), inset 0 1px 0 rgba(255,255,255,.25);
+  animation: appel 2.4s ease-out infinite; transition: transform .2s var(--ease), filter .2s var(--ease); }
+.btn-sos:hover { filter: brightness(1.06); }
+.btn-sos:active { transform: scale(.97); }
+.btn-sos svg { transition: transform .25s var(--ease); }
+.btn-sos:hover svg { transform: translateX(4px); }
+@keyframes appel { 0% { box-shadow: 0 14px 34px -12px rgba(229,23,47,.75), 0 0 0 0 rgba(229,23,47,.45); } 70%, 100% { box-shadow: 0 14px 34px -12px rgba(229,23,47,.75), 0 0 0 14px rgba(229,23,47,0); } }
+.sos-cta-s { margin: 10px 0 0; font-size: 13px; color: var(--ink-2); text-align: center; }
+
+/* Ordinateur : texte + bouton à gauche, téléphone à droite, tout sur un écran */
+@media (min-width: 900px) {
+  .sos-hero { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr auto 1fr; column-gap: 56px; text-align: left; align-items: center; padding: 0; }
+  .sos-txt { grid-column: 1; grid-row: 1; align-self: end; }
+  .sos-s { margin: 0; font-size: 20px; }
+  .sos-cta { grid-column: 1; grid-row: 2; position: static; width: auto; margin: 32px 0 0; padding: 0; background: none; }
+  .btn-sos { width: auto; padding: 0 44px; min-height: 76px; font-size: 24px; display: inline-flex; }
+  .sos-cta-s { text-align: left; }
+  .sos-visuel { grid-column: 2; grid-row: 1 / span 3; align-self: stretch; padding: 24px 0; }
+  .scene.scene-hero { --h: min(560px, 66dvh); }
+}
+@media (prefers-reduced-motion: reduce) { .sirene i, .btn-sos { animation: none; } .sirene i:first-child { opacity: .6; transform: scale(.8); } }
+.sos-hero { min-height: calc(100dvh - 70px - env(safe-area-inset-top)); }
+.nowrap { white-space: nowrap; }
+.sos-visuel { overflow: clip; overflow-clip-margin: 40px; } .sosp-accueil .sosp-root { overflow-y: clip; }
+
+/* Accueil ordinateur : bloc centré verticalement, colonnes resserrées */
+@media (min-width: 900px) {
+  .sos-hero { max-width: 1120px; margin: 0 auto; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); grid-template-rows: 1fr auto auto 1fr;
+    column-gap: clamp(32px, 5vw, 80px); padding: clamp(24px, 4dvh, 48px) 0; min-height: calc(100dvh - 70px); }
+  .sos-txt { grid-row: 2; align-self: end; }
+  .sos-cta { grid-row: 3; align-self: start; margin-top: clamp(24px, 4dvh, 40px); }
+  .sos-visuel { grid-row: 1 / -1; align-self: center; padding: 0; }
+  .sosp-root .sos-t { font-size: clamp(48px, 5.2vw, 84px); }
+  .sos-s { font-size: clamp(18px, 1.4vw, 21px); max-width: 32ch; }
+  .scene.scene-hero { --h: clamp(380px, 62dvh, 600px); }
+  .sirene { width: min(40vw, calc(62dvh * 1.15), 640px); }
+  .sos-cta-s { max-width: 44ch; }
+}
+
+/* ── En-tête : même police que le titre + repère urgence ── */
+.sosp-root .logo-phone { font: 600 20px/1 var(--font-d); letter-spacing: -.03em; }
+.top { border-bottom: 1px solid rgba(229,23,47,.14); }
+.top-urg { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 12px; border-radius: 99px;
+  background: var(--yellow-soft); color: var(--yellow); font: 600 12px/1 var(--font-d); letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; }
+.top-urg b { font-weight: 600; }
+.top-urg-z { color: rgba(229,23,47,.7); }
+.top-urg i { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); flex: none; animation: voyant 1.2s ease-in-out infinite; }
+@keyframes voyant { 0%, 100% { box-shadow: 0 0 0 0 rgba(229,23,47,.55); opacity: 1; } 50% { box-shadow: 0 0 0 6px rgba(229,23,47,0); opacity: .55; } }
+@media (max-width: 520px) { .top-urg-z { display: none; } .top-urg { padding: 7px 11px 7px 10px; font-size: 11px; } .sosp-root .logo-phone { font-size: 18px; } }
+@media (max-width: 380px) { .top:has(.top-back:not([hidden])) .top-urg b { display: none; } .top:has(.top-back:not([hidden])) .top-urg { padding: 9px; } }
+@media (prefers-reduced-motion: reduce) { .top-urg i { animation: none; } }
+
+/* ── Étape adresse ── */
+.btn-pos { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 58px; border: 0; border-radius: 18px;
+  background: var(--yellow-soft); color: var(--yellow); font: 600 17px/1 var(--font-d); letter-spacing: .02em; transition: background .2s var(--ease), transform .2s var(--ease); }
+.btn-pos:hover { background: #fbdde1; }
+.btn-pos:active { transform: scale(.98); }
+.btn-pos:disabled { opacity: .7; cursor: progress; }
+.btn-pos.ok { background: var(--green-soft); color: var(--green); }
+.ou { display: flex; align-items: center; gap: 12px; color: var(--ink-3); font-size: 13px; margin: 14px 0 18px; }
+.ou::before, .ou::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.adr-wrap { position: relative; }
+.sugg { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 20; list-style: none; margin: 0; padding: 6px; background: #fff;
+  border-radius: 16px; box-shadow: 0 0 0 1px var(--line), 0 18px 40px -16px rgba(0,0,0,.25); }
+.sugg button { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 10px 12px; border-radius: 10px; }
+.sugg button:hover, .sugg button:focus-visible { background: var(--surface); }
+.sugg b { display: block; font-weight: 600; font-size: 16px; }
+.sugg span { display: block; font-size: 13px; color: var(--ink-2); }
+
+/* ═══ Pleine largeur + choix du modèle façon Apple Store ═══ */
+.app { max-width: 1600px; }
+.top { padding-left: max(clamp(16px, 4vw, 48px), calc(50vw - 800px + clamp(16px, 4vw, 48px))); padding-right: max(clamp(16px, 4vw, 48px), calc(50vw - 800px + clamp(16px, 4vw, 48px))); }
+.mod-tete .sub { margin-bottom: 16px; }
+.mod-tete .search { position: static; margin: 0 0 14px; }
+.series { position: sticky; top: calc(58px + env(safe-area-inset-top)); z-index: 5; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+  margin: 0 calc(-1 * clamp(16px, 4vw, 48px)) 6px; padding: 10px clamp(16px, 4vw, 48px); background: rgba(255,255,255,.88);
+  -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); }
+.series::-webkit-scrollbar { display: none; }
+.serie-b { flex: none; border: 0; border-radius: 99px; padding: 10px 16px; background: var(--surface); color: var(--ink);
+  font: 500 15px/1 var(--font-d); letter-spacing: -.01em; white-space: nowrap; transition: background .2s var(--ease), color .2s var(--ease); }
+.serie-b:hover { background: var(--fill); }
+.serie-b[aria-selected="true"] { background: var(--ink); color: #fff; }
+.modeles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.modeles .serie { grid-column: 1 / -1; margin: 18px 4px 0; }
+.modeles .serie:first-child { margin-top: 6px; }
+.modeles .empty { grid-column: 1 / -1; }
+.phone-autre .phone-n small { font-size: 11px; }
+@media (min-width: 640px) { .modeles { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; } }
+@media (min-width: 900px) {
+  .mod-tete { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
+  .mod-tete .search { width: min(420px, 40%); flex: none; margin-bottom: 22px; }
+  .series { top: 70px; }
+  .modeles { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .chip.phone { padding: 22px 10px 16px; }
+  .chip.phone .phone-img { width: 70px; height: 142px; }
+  .phone-n { font-size: 17px; }
+}
+
+/* ═══ En-tête dégradé rouge : SOS Phone · Dispo ═══ */
+.sosp-root .top {
+  background: linear-gradient(115deg, #a8001a 0%, #d9122a 45%, #ff3d4f 100%);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom: 0; color: #fff; box-shadow: 0 8px 24px -14px rgba(168,0,26,.8);
+  padding-top: calc(12px + env(safe-area-inset-top)); padding-bottom: 12px;
+}
+.sosp-root .top .logo, .sosp-root .top .logo-phone { color: #fff; }
+.sosp-root .logo-phone { font: 700 21px/1 var(--font-d); letter-spacing: -.02em; text-transform: uppercase; }
+.logo-img { box-shadow: 0 0 0 2px #fff, 0 4px 12px rgba(0,0,0,.25); }
+.sosp-root .top-back { color: #fff; }
+.sosp-root .top-back:hover { background: rgba(255,255,255,.15); }
+.sosp-root .top-urg { background: #fff; color: #d9122a; padding: 9px 15px 9px 13px; font-size: 13px; letter-spacing: .08em;
+  box-shadow: 0 4px 14px -6px rgba(0,0,0,.35); }
+.sosp-root .top-urg-z { color: #d9122a; opacity: .75; display: inline; }
+.sosp-root .top-urg i { background: #22c55e; animation: dispo 1.4s ease-in-out infinite; }
+@keyframes dispo { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.6); } 50% { box-shadow: 0 0 0 6px rgba(34,197,94,0); } }
+.series { top: calc(64px + env(safe-area-inset-top)); }
+.stage.collant { top: calc(64px + env(safe-area-inset-top)); }
+@media (max-width: 380px) { .sosp-root .logo-phone { font-size: 17px; } .sosp-root .top-urg { padding: 8px 11px; font-size: 12px; } .top:has(.top-back:not([hidden])) .top-urg-z { display: none; } }
+@media (prefers-reduced-motion: reduce) { .sosp-root .top-urg i { animation: none; } }
+.sosp-root .top .top-urg b { display: inline; }
+
+/* Bouton « Voir mon prix » un peu plus discret */
+.btn-sos { min-height: 58px; font-size: 18px; border-radius: 18px; gap: 10px; }
+.btn-sos svg { width: 22px; height: 22px; }
+@media (min-width: 900px) { .btn-sos { min-height: 62px; font-size: 19px; padding: 0 34px; } }
+.btn-resa { gap: 10px; }
+.btn-resa svg { flex: none; }
+.done-ico.wa { background: #25d366; }
+@media (max-width: 440px) {
+  .sosp-root .top-back::after { content: ""; }
+  .sosp-root .top-back { padding: 0 6px 0 0; }
+  .sosp-root .top .top-urg b { display: inline !important; }
+}
+.btn-resa span { white-space: nowrap; }
+
+/* ═══ Héros : fausse carte en fond, itinéraire SOS Phone → chez toi ═══ */
+.sos-hero { position: relative; isolation: isolate; }
+.sos-hero > :not(.sos-carte) { position: relative; z-index: 1; }
+.sos-carte { position: absolute; z-index: 0; top: 0; bottom: 0; left: calc(50% - 50vw); width: 100vw; pointer-events: none; overflow: hidden; }
+.sos-carte svg { width: 100%; height: 100%; display: block; }
+.sos-carte::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(#fff 0%, rgba(255,255,255,.92) 22%, rgba(255,255,255,.25) 40%, rgba(255,255,255,0) 52%, rgba(255,255,255,0) 72%, rgba(255,255,255,.9) 86%, #fff 100%); }
+.sos-cta { background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,.96) 30%); }
+.sos-visuel .hero-cap { background: rgba(255,255,255,.9); padding: 6px 12px; border-radius: 99px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+/* le fond rouge global s'efface derrière la carte */
+.sosp-accueil .sosp-root::before { opacity: .35; }
+@media (min-width: 900px) {
+  .sos-carte::after { background:
+    linear-gradient(90deg, #fff 0%, rgba(255,255,255,.95) calc(50% - 420px), rgba(255,255,255,.55) calc(50% - 120px), rgba(255,255,255,0) calc(50% + 40px)),
+    linear-gradient(rgba(255,255,255,0) 80%, #fff 100%); }
+}
+
+@media (min-width: 900px) {
+  .sos-carte::after { background:
+    linear-gradient(90deg, #fff 0%, rgba(255,255,255,.93) calc(50% - 460px), rgba(255,255,255,.35) calc(50% - 260px), rgba(255,255,255,0) calc(50% - 120px)),
+    linear-gradient(rgba(255,255,255,0) 82%, #fff 100%); }
+}
+@media (min-width: 900px) { .sos-cta { background: none; } }
+
+/* ═══ En-tête : rouge uni, logo centré, statut en direct, réseaux ═══ */
+.sosp-root .top { background: #d9122a; box-shadow: 0 6px 20px -12px rgba(150,0,20,.7);
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+.sosp-root .top-back { grid-column: 1; justify-self: start; }
+.sosp-root .logo { grid-column: 2; justify-self: center; gap: 10px; }
+.sosp-root .reseaux { grid-column: 3; justify-self: end; display: flex; gap: 4px; }
+.logo-txt { display: flex; flex-direction: column; gap: 4px; }
+.sosp-root .logo-phone { font: 700 19px/1 var(--font-d); letter-spacing: .01em; text-transform: uppercase; color: #fff; }
+.statut { display: inline-flex; align-items: center; gap: 6px; font: 500 11.5px/1 var(--font-d); color: rgba(255,255,255,.92); letter-spacing: .02em; white-space: nowrap; }
+.statut i { width: 7px; height: 7px; border-radius: 50%; background: #34e27a; flex: none; animation: dispo 1.6s ease-in-out infinite; }
+.statut.ferme i { background: #ffd166; animation: none; }
+.reseaux a { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: #fff; text-decoration: none !important; transition: background .2s var(--ease); }
+.reseaux a:hover { background: rgba(255,255,255,.16); }
+.top-urg { display: none !important; }
+@media (max-width: 440px) {
+  .reseaux a { width: 30px; height: 30px; }
+  .reseaux svg { width: 17px; height: 17px; }
+  .sosp-root .logo-img { width: 32px; height: 32px; }
+  .sosp-root .logo-phone { font-size: 16px; }
+  .statut { font-size: 10.5px; }
+}
+@media (prefers-reduced-motion: reduce) { .statut i { animation: none; } }
+
+/* ═══ Étape 1 : la marque ═══ */
+.marques { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.marque { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 118px; padding: 18px 10px;
+  border: 0; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px var(--line); color: var(--ink);
+  transition: box-shadow .2s var(--ease), transform .2s var(--ease); }
+.marque:hover { box-shadow: 0 0 0 1.5px var(--ink); }
+.marque:active { transform: scale(.97); }
+.marque-logo { width: 44px; height: 44px; display: grid; place-items: center; }
+.marque-logo img { width: 40px; height: 40px; }
+.marque-q { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ink-3); color: var(--ink-2); display: grid; place-items: center; font: 600 22px/1 var(--font-d); }
+.marque-n { font: 600 16px/1.1 var(--font-d); }
+.marque-apple { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; gap: 16px; min-height: 92px; padding: 18px 20px;
+  background: #111; color: #fff; box-shadow: none; text-align: left; }
+.marque-apple:hover { box-shadow: 0 10px 26px -12px rgba(0,0,0,.6); }
+.marque-apple img { filter: invert(1); }
+.marque-apple .marque-n { font-size: 22px; }
+.marque-apple .marque-s { margin-left: auto; font: 500 12px/1 var(--font-d); text-transform: uppercase; letter-spacing: .06em; background: var(--yellow); color: #fff; padding: 8px 11px; border-radius: 99px; }
+@media (min-width: 640px) { .marques { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .screen:has(.marques) { max-width: 980px; } .marques { gap: 14px; } .marque { min-height: 140px; } }
+@media (max-width: 380px) { .marque-apple .marque-s { display: none; } }
+
+/* ═══ Tuile iPhone : la plus visible de l'écran des marques ═══ */
+.marque-iphone { grid-column: 1 / -1; position: relative; overflow: hidden; display: flex; align-items: stretch; justify-content: space-between;
+  min-height: 176px; padding: 22px 20px; border: 2px solid var(--yellow); border-radius: 22px; text-align: left; color: var(--ink);
+  background: radial-gradient(120% 140% at 100% 100%, rgba(229,23,47,.16), rgba(229,23,47,0) 60%), #fff5f6;
+  box-shadow: 0 16px 36px -20px rgba(229,23,47,.7); transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+.marque-iphone:hover { transform: translateY(-2px); box-shadow: 0 22px 44px -20px rgba(229,23,47,.8); }
+.marque-iphone:active { transform: scale(.98); }
+.mi-txt { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.mi-logo { display: inline-flex; align-items: center; gap: 8px; font: 600 22px/1 var(--font-d); letter-spacing: -.02em; }
+.mi-logo img { width: 24px; height: 24px; }
+.mi-t { font: 600 clamp(20px, 5.4vw, 28px)/1.1 var(--font-d); letter-spacing: -.03em; }
+.mi-go { margin-top: auto; display: inline-flex; align-items: center; gap: 8px; background: var(--yellow); color: #fff; padding: 11px 16px; border-radius: 99px;
+  font: 600 14px/1 var(--font-d); letter-spacing: .04em; text-transform: uppercase; box-shadow: 0 8px 18px -8px rgba(229,23,47,.8); animation: appel 2.4s ease-out infinite; }
+.mi-photos { position: absolute; right: 6px; bottom: -14px; width: 46%; height: 112%; pointer-events: none; }
+.mi-photos img { position: absolute; bottom: 0; height: 88%; width: auto; filter: drop-shadow(0 10px 14px rgba(0,0,0,.22)); transition: transform .35s var(--ease); }
+.mi-photos img:nth-child(1) { right: 44%; transform: rotate(-14deg); transform-origin: bottom center; height: 74%; }
+.mi-photos img:nth-child(2) { right: 22%; transform: rotate(-4deg); transform-origin: bottom center; height: 82%; }
+.mi-photos img:nth-child(3) { right: 0; transform: rotate(8deg); transform-origin: bottom center; }
+.marque-iphone:hover .mi-photos img:nth-child(1) { transform: rotate(-18deg) translateY(-4px); }
+.marque-iphone:hover .mi-photos img:nth-child(3) { transform: rotate(12deg) translateY(-4px); }
+.marques-autres { grid-column: 1 / -1; margin: 10px 2px 0; font: 500 12px/1 var(--font-d); text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); }
+@media (min-width: 640px) { .marque-iphone { min-height: 210px; padding: 28px 30px; } .mi-photos { width: 42%; } }
+@media (prefers-reduced-motion: reduce) { .mi-go { animation: none; } }
+
+/* ═══ « SOS PHONE » de l'en-tête : police Unbounded + reflet qui scintille ═══ */
+.sosp-root .top .logo-phone {
+  font: 800 18px/1 "Unbounded", var(--font-d); letter-spacing: .03em; text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(105deg, #fff 0%, #fff 38%, #ffd3d9 45%, #ffffff 50%, #ffe7a3 55%, #fff 62%, #fff 100%);
+  background-size: 260% 100%; background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(120,0,15,.35));
+  animation: scintille 3.4s ease-in-out infinite;
+}
+@keyframes scintille { 0% { background-position: 100% 0; } 55%, 100% { background-position: 0% 0; } }
+@media (max-width: 440px) { .sosp-root .top .logo-phone { font-size: 14.5px; } }
+@media (prefers-reduced-motion: reduce) { .sosp-root .top .logo-phone { animation: none; } }
+
+/* ═══ « SOS » de l'en-tête : gyrophare d'alarme ═══ */
+.sosp-root .top .logo-phone { display: inline-flex; align-items: center; gap: 7px; }
+.screen-reader-text { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sos-alarme { position: relative; display: inline-grid; place-items: center; padding: 4px 7px 5px; border-radius: 7px;
+  background: #fff; -webkit-text-fill-color: #d9122a; color: #d9122a; font: 800 1em/1 "Unbounded", var(--font-d);
+  box-shadow: 0 0 0 0 rgba(255,255,255,.0); animation: alarme 1.6s steps(1, end) infinite; }
+.sos-alarme span { -webkit-text-fill-color: inherit; }
+.sos-alarme::before, .sos-alarme::after { content: ""; position: absolute; top: 50%; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%;
+  background: #fff; opacity: 0; animation: flash-g 1.6s steps(1, end) infinite; }
+.sos-alarme::before { left: -9px; } .sos-alarme::after { right: -9px; animation-name: flash-d; }
+.logo-suite { -webkit-text-fill-color: transparent; }
+/* deux éclairs rapides, une pause : rythme d'alarme */
+@keyframes alarme {
+  0%   { background: #fff; -webkit-text-fill-color: #d9122a; box-shadow: 0 0 14px 3px rgba(255,255,255,.75); }
+  12%  { background: #7a0010; -webkit-text-fill-color: #fff; box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  24%  { background: #fff; -webkit-text-fill-color: #d9122a; box-shadow: 0 0 14px 3px rgba(255,255,255,.75); }
+  36%  { background: #7a0010; -webkit-text-fill-color: #fff; box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  48%, 100% { background: #fff; -webkit-text-fill-color: #d9122a; box-shadow: 0 0 6px 0 rgba(255,255,255,.35); }
+}
+@keyframes flash-g { 0% { opacity: 1; } 12% { opacity: 0; } 24% { opacity: 1; } 36%, 100% { opacity: 0; } }
+@keyframes flash-d { 0% { opacity: 0; } 12% { opacity: 1; } 24% { opacity: 0; } 36% { opacity: 1; } 48%, 100% { opacity: 0; } }
+@media (max-width: 440px) { .sos-alarme { padding: 3px 5px 4px; border-radius: 6px; } .sosp-root .top .logo-phone { gap: 6px; } }
+@media (prefers-reduced-motion: reduce) { .sos-alarme, .sos-alarme::before, .sos-alarme::after { animation: none; } }
+/* le reflet ne concerne plus que « PHONE » ; « SOS » est le gyrophare */
+.sosp-root .top .logo-phone { background: none; -webkit-text-fill-color: #fff; filter: none; animation: none; }
+.sosp-root .top .logo-suite {
+  background: linear-gradient(105deg, #fff 0%, #fff 38%, #ffd3d9 45%, #ffffff 50%, #ffe7a3 55%, #fff 62%, #fff 100%);
+  background-size: 260% 100%; background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  animation: scintille 3.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sosp-root .top .logo-suite { animation: none; } }
+
+/* Le câble (panne « Charge mal ») ne doit pas passer sur le texte sous le téléphone */
+.stage .scene { padding-bottom: calc(var(--h) * .15); }
+.stage .cable { height: 14%; }
+.stage .cable::after { height: 40%; }
+.scene-hero .cable { height: 16%; }
+
+/* Barre d'admin WordPress : sur mobile elle défile, l'en-tête ne doit pas rester décalé */
+@media (max-width: 600px) {
+  .admin-bar .top, .admin-bar .sosp-root .top { top: 0; }
+  .admin-bar .stage.collant { top: calc(58px + env(safe-area-inset-top)); }
+}
+
+/* Garder toute la sélection visible à gauche, même sur un écran peu haut. */
+@media (min-width: 900px) {
+  .screen:has(> .stage) > .stage { gap: 12px; padding: 12px 0; }
+  .screen:has(> .stage) > .stage .scene { --h: min(440px, calc((100dvh - 260px) / 1.15)); }
+  .screen:has(> .stage) > .stage:has(.stage-p:nth-child(9)) .scene { --h: min(360px, calc((100dvh - 360px) / 1.15)); }
+  .screen:has(> .stage) > .stage .stage-txt { order: -1; max-width: none; width: 100%; }
+  .stage .step { font-size: 12px; }
+  .stage-t { font-size: 26px; }
+  .stage-s { font-size: 14px; line-height: 1.4; }
+  .stage-t:has(.stage-plus) { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; font-size: 15px; line-height: 1.3; text-wrap: wrap; margin-bottom: 10px; }
+  .stage-t:has(.stage-plus) .stage-p { padding: 6px 9px; border-radius: 10px; background: var(--surface); }
+  .stage-t .stage-plus { display: none; }
+}
+@media (min-width: 900px) and (max-height: 650px) {
+  .screen:has(> .stage) > .stage { padding: 8px 0; gap: 8px; }
+  .stage-t:has(.stage-plus) { font-size: 14px; }
+}
+
+/* ═══ Héros ordinateur : tout centré (titre, texte, téléphone, bouton) ═══ */
+@media (min-width: 900px) {
+  .sos-hero { display: flex !important; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    max-width: none; min-height: calc(100dvh - 70px); padding: clamp(18px, 3dvh, 36px) 0 clamp(16px, 3dvh, 32px); }
+  .sos-txt, .sos-visuel, .sos-cta { grid-column: auto !important; grid-row: auto !important; }
+  .sos-txt { align-self: center; max-width: 980px; }
+  .sosp-root .sos-t { font-size: clamp(44px, 4.4vw, 72px); line-height: 1.04; margin-bottom: 12px; }
+  .sos-t br { display: none; }
+  .sos-t span { margin-left: .25em; }
+  .sos-s { margin: 0 auto; max-width: 46ch; font-size: clamp(17px, 1.3vw, 20px); }
+  .sos-visuel { flex: 1; width: 100%; padding: clamp(10px, 2dvh, 22px) 0 0; align-self: center; min-height: 0; }
+  .scene.scene-hero { --h: clamp(300px, 46dvh, 500px); }
+  .sos-visuel .hero-cap { margin-top: 12px; }
+  .sos-cta { align-self: center; display: flex; flex-direction: column; align-items: center; width: auto; margin: clamp(14px, 2.4dvh, 26px) 0 0; padding: 0; position: static; background: none; }
+  .sos-cta-s { text-align: center; max-width: none; white-space: nowrap; }
+  /* la carte : fondu blanc derrière le titre en haut et en bas, plus de fondu à gauche */
+  .sos-carte::after { background: linear-gradient(#fff 0%, rgba(255,255,255,.94) 16%, rgba(255,255,255,.35) 30%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 76%, rgba(255,255,255,.85) 90%, #fff 100%); }
+}
+@media (min-width: 900px) { .sos-s { max-width: 64ch; } }
+
+/* ═══ « Je préfère être rappelé » ═══ */
+.rappel-lien { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 14px auto 0; padding: 8px 14px; min-height: 44px;
+  background: none; border: 0; font: 500 15px/1.2 var(--font); color: var(--ink); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); }
+.rappel-lien svg { color: var(--yellow); flex: none; }
+.rappel-lien:hover { text-decoration-color: currentColor; }
+
+/* ═══ Téléphone : tout le héros tient dans l'écran, sans défiler ═══
+   Le héros prend exactement la hauteur visible sous l'en-tête. Texte, bouton,
+   infos et rappel gardent leur taille ; l'iPhone animé prend la place qui reste. */
+@media (max-width: 899px) {
+  .sosp-accueil .sos-hero { height: calc(100dvh - 70px - env(safe-area-inset-top)); min-height: 0; padding-top: clamp(8px, 2dvh, 18px); }
+  .sosp-root .sos-t { font-size: clamp(30px, 8.6vw, 40px); margin-bottom: 6px; }
+  .sos-s { font-size: 15px; line-height: 1.35; }
+  .sos-visuel { flex: 1 1 0; min-height: 0; container-type: size; padding: 6px 0 2px; }
+  .scene.scene-hero { --h: min(430px, max(110px, calc(100cqh - 46px))); }
+  .sos-visuel .hero-cap { margin-top: 8px; font-size: 14px; padding: 4px 11px; }
+  .sos-cta { position: relative; padding-top: 6px; padding-bottom: calc(6px + env(safe-area-inset-bottom)); }
+  .btn-sos { min-height: 54px; }
+  .sos-cta-s { margin-top: 7px; font-size: 12px; line-height: 1.35; }
+  .sos-cta .rappel-lien { margin-top: 2px; min-height: 38px; padding: 4px 12px; font-size: 14px; }
+}
+@media (max-width: 899px) and (max-height: 600px) {
+  .sos-s { font-size: 14px; }
+  .sosp-root .sos-t { font-size: 30px; }
+}

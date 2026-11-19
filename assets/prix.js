@@ -161,7 +161,53 @@ const MODELES = [
     ecran:{ premium:75, oled:110, apple:190, nomOled:"Soft OLED" },
     batterieFixe:null, connecteur:90, vitre:null, chassis:150, boutons:90 },
 
-  { nom:"iPhone 11 ou plus ancien", serie:"iPhone 11 et plus ancien",
+  /* Du 11 au 7 : mêmes prix que l'ancienne ligne « iPhone 11 ou plus ancien »,
+     à ajuster modèle par modèle dans la page « Prix SOS ». */
+  { nom:"iPhone 11 Pro Max", serie:"iPhone 11",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone 11 Pro", serie:"iPhone 11",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone 11", serie:"iPhone 11",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone XS Max", serie:"iPhone X",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone XS", serie:"iPhone X",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone XR", serie:"iPhone X",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone X", serie:"iPhone X",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone SE (2020 / 2022)", serie:"iPhone SE",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone 8 Plus", serie:"iPhone 8 et 7",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone 8", serie:"iPhone 8 et 7",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone 7 Plus", serie:"iPhone 8 et 7",
+    ecran:{ unique:70 },
+    batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
+
+  { nom:"iPhone 7", serie:"iPhone 8 et 7",
     ecran:{ unique:70 },
     batterieFixe:70, connecteur:90, vitre:null, chassis:150, boutons:90 },
 
@@ -245,7 +291,7 @@ const PANNES = [
    ⚠️ Le diagnostic est HORS REMISE multi-réparations : il n'est pas
    remisé, et il ne compte pas dans le nombre de réparations.
 ─────────────────────────────────────────────────────────────── */
-const DIAGNOSTIC = 50;
+var DIAGNOSTIC = 50;   /* var : modifiable depuis WordPress → Prix SOS */
 const MENTION_DIAGNOSTIC = "Déduit du prix si tu fais la réparation.";
 
 
@@ -254,7 +300,7 @@ const MENTION_DIAGNOSTIC = "Déduit du prix si tu fais la réparation.";
    uniquement sur les modèles marqués « vitreSansLogo:true » —
    l'iPhone 17e et le 17 Air restent en origine uniquement.
 ─────────────────────────────────────────────────────────────── */
-const REMISE_SANS_LOGO = 50;
+var REMISE_SANS_LOGO = 50;   /* var : modifiable depuis WordPress → Prix SOS */
 
 
 /* ── CHÂSSIS AVEC UNE VITRE ARRIÈRE ────────────────────────────
@@ -289,7 +335,7 @@ const CHASSIS_COMBINE = { defaut: 70 };
 
 
 /* ── DÉSOXYDATION ──────────────────────────────────────────────
-   Prix unique, TOUS modèles, y compris « iPhone 11 ou plus ancien »
+   Prix unique, TOUS modèles, y compris les plus anciens (11 à 7)
    et « Un autre modèle ». Le diagnostic est compris dedans.
 
    ⚠️ C'est la SEULE prestation sans garantie de résultat. Un dégât
@@ -298,7 +344,7 @@ const CHASSIS_COMBINE = { defaut: 70 };
    tard. L'écran d'avertissement qui précède le prix dit tout ça —
    il n'est pas décoratif, ne le retire pas.
 ─────────────────────────────────────────────────────────────── */
-const DESOXYDATION = 70;
+var DESOXYDATION = 70;   /* var : modifiable depuis WordPress → Prix SOS */
 
 
 /* ── PIÈCES POSÉES EN ORIGINE UNIQUEMENT ───────────────────────
@@ -400,3 +446,11 @@ const URGENCES = [
   { id:"info",    ico:"👀", titre:"Je regarde juste le prix",
     detail:"Je ne réserve pas maintenant", chaud:false }
 ];
+
+
+/* ── SUPPLÉMENT DE DÉPLACEMENT PAR DÉPARTEMENT ─────────────────
+   En euros, ajouté une fois au devis, sans remise. 0 = gratuit.
+   Se règle dans WordPress → Prix SOS (ce qui est enregistré là-bas
+   remplace ces valeurs).
+─────────────────────────────────────────────────────────────── */
+var DEPLACEMENT = { "75": 0, "77": 0, "78": 0, "91": 0, "92": 0, "93": 0, "94": 0, "95": 0 };

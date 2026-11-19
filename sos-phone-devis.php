@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SOS Phone — Devis réparation
  * Description: Web app de devis SOS Phone (modèle → panne → département → urgence → numéro → prix). Shortcode [sos_phone]. Les demandes arrivent dans « Demandes SOS ».
- * Version: 1.4.0
+ * Version: 1.5.0
  * Author: SOS Phone
  * Text Domain: sos-phone
  * Requires at least: 6.0
@@ -13,9 +13,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SOSP_VERSION', '1.4.0' );
+define( 'SOSP_VERSION', '1.5.0' );
 define( 'SOSP_URL', plugin_dir_url( __FILE__ ) );
 define( 'SOSP_DIR', plugin_dir_path( __FILE__ ) );
+require_once SOSP_DIR . 'prix-admin.php';
+require_once SOSP_DIR . 'espace.php';
 
 /* ══ Réglages ══════════════════════════════════════════════════ */
 
@@ -26,7 +28,7 @@ function sosp_defaults() {
 		'instagram'     => 'sosphoneparis75',
 		'heure_debut'   => 9,
 		'heure_fin'     => 21,
-		'email_notif'   => get_option( 'admin_email' ),
+		'email_notif'   => '',
 		'pleine_page'   => 1,
 		'auto_maj'      => 1,
 		'depot'         => 'wanisite/sos-phone',
@@ -125,7 +127,8 @@ add_filter( 'manage_sos_demande_posts_columns', function () {
 		'title'  => 'Demande',
 		'tel'    => 'Téléphone',
 		'dep'    => 'Département',
-		'urg'    => 'Urgence',
+		'urg'    => 'Créneau',
+		'adr'    => 'Adresse',
 		'total'  => 'Total',
 		'etape'  => 'Étape',
 		'date'   => 'Date',
@@ -133,10 +136,13 @@ add_filter( 'manage_sos_demande_posts_columns', function () {
 } );
 
 add_action( 'manage_sos_demande_posts_custom_column', function ( $col, $id ) {
-	$map = array( 'tel' => 'telephone', 'dep' => 'departement', 'urg' => 'urgence', 'etape' => 'etape' );
+	$map = array( 'tel' => 'telephone', 'dep' => 'departement', 'urg' => 'urgence', 'etape' => 'etape', 'adr' => 'adresse' );
 	if ( isset( $map[ $col ] ) ) {
 		$v = get_post_meta( $id, '_sos_' . $map[ $col ], true );
-		if ( 'tel' === $col && $v ) {
+		if ( 'adr' === $col && $v ) {
+			$c = get_post_meta( $id, '_sos_carte', true );
+			echo esc_html( $v ) . ( $c ? ' <a href="' . esc_url( $c ) . '" target="_blank" rel="noopener">Carte</a>' : '' );
+		} elseif ( 'tel' === $col && $v ) {
 			echo '<a href="tel:' . esc_attr( $v ) . '">' . esc_html( $v ) . '</a>';
 		} else {
 			echo esc_html( $v );
@@ -156,8 +162,11 @@ add_action( 'add_meta_boxes_sos_demande', function () {
 			return;
 		}
 		echo '<table class="widefat striped"><tbody>';
-		foreach ( array( 'code' => 'Code', 'telephone' => 'Téléphone', 'departement' => 'Département', 'urgence' => 'Urgence', 'promo' => 'Code promo', 'source' => 'Source', 'etape' => 'Étape' ) as $k => $l ) {
+		foreach ( array( 'code' => 'Code', 'telephone' => 'Téléphone', 'departement' => 'Département', 'urgence' => 'Créneau', 'adresse' => 'Adresse', 'promo' => 'Code promo', 'source' => 'Source', 'etape' => 'Étape' ) as $k => $l ) {
 			echo '<tr><th style="width:160px">' . esc_html( $l ) . '</th><td>' . esc_html( $d[ $k ] ?? '' ) . '</td></tr>';
+		}
+		if ( ! empty( $d['carte'] ) ) {
+			echo '<tr><th>Carte</th><td><a href="' . esc_url( $d['carte'] ) . '" target="_blank" rel="noopener">Ouvrir dans Google Maps</a></td></tr>';
 		}
 		echo '</tbody></table>';
 		foreach ( (array) ( $d['telephones'] ?? array() ) as $p ) {
@@ -211,7 +220,9 @@ function sosp_rest_lead( WP_REST_Request $req ) {
 		'etape'       => sosp_clean( $d['etape'] ?? '', 30 ),
 		'telephone'   => sosp_clean( $d['telephone'] ?? '', 25 ),
 		'departement' => sosp_clean( $d['departement'] ?? '', 60 ),
-		'urgence'     => sosp_clean( $d['urgence'] ?? '', 60 ),
+		'urgence'     => sosp_clean( $d['urgence'] ?? '', 80 ),
+		'adresse'     => sosp_clean( $d['adresse'] ?? '', 250 ),
+		'carte'       => esc_url_raw( (string) ( $d['carte'] ?? '' ) ),
 		'promo'       => sosp_clean( $d['promo'] ?? '', 20 ),
 		'source'      => sosp_clean( $d['source'] ?? '', 60 ),
 		'total'       => isset( $d['total'] ) && is_numeric( $d['total'] ) ? round( (float) $d['total'], 2 ) : null,
@@ -243,7 +254,7 @@ function sosp_rest_lead( WP_REST_Request $req ) {
 		'fields'      => 'ids',
 	) );
 	$modeles = implode( ' + ', wp_list_pluck( $lead['telephones'], 'modele' ) );
-	$title   = $lead['code'] . ' · ' . ( $modeles ?: 'Demande' );
+	$title   = $lead['code'] . ' · ' . ( 'rappel' === $lead['etape'] ? '📞 À rappeler' . ( $modeles ? ' · ' . $modeles : '' ) : ( $modeles ?: 'Demande' ) );
 	$id      = $existing ? $existing[0] : 0;
 	$id      = wp_insert_post( array(
 		'ID'          => $id,
@@ -254,7 +265,7 @@ function sosp_rest_lead( WP_REST_Request $req ) {
 	if ( is_wp_error( $id ) || ! $id ) {
 		return new WP_REST_Response( array( 'ok' => false ), 500 );
 	}
-	foreach ( array( 'code', 'etape', 'telephone', 'departement', 'urgence' ) as $k ) {
+	foreach ( array( 'code', 'etape', 'telephone', 'departement', 'urgence', 'adresse', 'carte' ) as $k ) {
 		update_post_meta( $id, '_sos_' . $k, $lead[ $k ] );
 	}
 	update_post_meta( $id, '_sos_total', null === $lead['total'] ? '' : $lead['total'] );
@@ -263,7 +274,7 @@ function sosp_rest_lead( WP_REST_Request $req ) {
 	$o = sosp_opts();
 	if ( $o['email_notif'] && in_array( $lead['etape'], array( 'rdv', 'envoi_postal', 'hors_zone' ), true ) ) {
 		$body  = "Nouvelle demande SOS Phone\n\n";
-		$body .= "Code : {$lead['code']}\nTéléphone : {$lead['telephone']}\nDépartement : {$lead['departement']}\nUrgence : {$lead['urgence']}\n";
+		$body .= "Code : {$lead['code']}\nTéléphone : {$lead['telephone']}\nDépartement : {$lead['departement']}\nCréneau : {$lead['urgence']}\nAdresse : {$lead['adresse']}\n" . ( $lead['carte'] ? "Carte : {$lead['carte']}\n" : '' );
 		$body .= 'Total : ' . ( null === $lead['total'] ? 'à chiffrer' : $lead['total'] . ' €' ) . "\n\n";
 		foreach ( $lead['telephones'] as $p ) {
 			$body .= "— {$p['modele']}\n";
@@ -320,7 +331,7 @@ function sosp_asset( $f ) {
 
 function sosp_enqueue() {
 	$o = sosp_opts();
-	wp_enqueue_style( 'sosp-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap', array(), null );
+	wp_enqueue_style( 'sosp-fonts', 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,400..500&family=Outfit:wght@200..600&family=Unbounded:wght@700;800&display=swap', array(), null );
 	wp_enqueue_style( 'sosp', sosp_asset( 'style.css' )[0], array( 'sosp-fonts' ), sosp_asset( 'style.css' )[1] );
 	wp_enqueue_script( 'sosp-config', sosp_asset( 'config.js' )[0], array(), sosp_asset( 'config.js' )[1], true );
 	wp_add_inline_script( 'sosp-config', 'Object.assign(CONFIG,' . wp_json_encode( array(
@@ -333,6 +344,7 @@ function sosp_enqueue() {
 		'ACCUEIL_URL'       => home_url( '/' ),
 	) ) . ');' );
 	wp_enqueue_script( 'sosp-prix', sosp_asset( 'prix.js' )[0], array( 'sosp-config' ), sosp_asset( 'prix.js' )[1], true );
+	sosp_prix_inline_site();
 	wp_enqueue_script( 'sosp-app', sosp_asset( 'app.js' )[0], array( 'sosp-prix' ), sosp_asset( 'app.js' )[1], true );
 }
 
@@ -346,20 +358,34 @@ function sosp_markup() {
 			<button class="top-back" id="back" type="button" aria-label="Retour" hidden>
 				<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
 			</button>
-			<a class="logo" href="#" id="logo" aria-label="SOS Phone, accueil"><img class="logo-img" src="<?php echo esc_url( SOSP_URL . 'assets/logo.jpg' ); ?>" alt="" width="38" height="38"><span class="logo-phone">SOS Phone</span></a>
-			<span class="top-zone">Île-de-France</span>
+			<a class="logo" href="#" id="logo" aria-label="SOS Phone, accueil"><img class="logo-img" src="<?php echo esc_url( SOSP_URL . 'assets/logo.jpg' ); ?>" alt="" width="38" height="38"><span class="logo-txt"><span class="logo-phone"><span class="sos-alarme" aria-hidden="true"><span>SOS</span></span><span class="logo-suite">Phone</span></span><span class="statut" id="statut" aria-live="polite"><i></i>Disponible maintenant</span></span></a>
+			<nav class="reseaux" id="reseaux" aria-label="Nos réseaux"></nav>
 		</header>
 		<div class="progress" id="progress" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 		<main id="view" class="view" tabindex="-1" aria-live="polite"></main>
 		<footer class="foot" id="foot">
-			<p><b>SOS Phone</b> · Réparation à domicile en Île-de-France</p>
-			<p>Prix comprenant la pièce et la main d'œuvre. Garantie selon la pièce, de 1 à 6 mois.</p>
-			<?php $o = sosp_opts(); ?>
-			<p>
-				<?php if ( $o['instagram'] ) : ?><a href="<?php echo esc_url( 'https://www.instagram.com/' . $o['instagram'] . '/' ); ?>" target="_blank" rel="noopener">Instagram @<?php echo esc_html( $o['instagram'] ); ?></a><?php endif; ?>
-				<?php if ( $o['instagram'] && $privacy ) : ?> · <?php endif; ?>
-				<?php if ( $privacy ) : ?><a href="<?php echo esc_url( $privacy ); ?>">Confidentialité</a><?php endif; ?>
-			</p>
+			<div class="foot-in">
+				<div class="foot-marque">
+					<p class="foot-logo"><img src="<?php echo esc_url( SOSP_URL . 'assets/logo.jpg' ); ?>" alt="" width="40" height="40" loading="lazy"><span><b>SOS</b> Phone</span></p>
+					<p>Réparation de téléphone à domicile, 7j/7, partout en France.</p>
+				</div>
+				<div class="foot-col">
+					<p class="foot-t">Nous joindre</p>
+					<ul class="foot-liens" id="footReseaux"></ul>
+				</div>
+				<div class="foot-col">
+					<p class="foot-t">Bon à savoir</p>
+					<ul class="foot-infos">
+						<li>Prix fixe, pièce et main d'œuvre comprises</li>
+						<li>Garantie de 1 à 6 mois selon la pièce</li>
+						<li>Déplacement annoncé sur WhatsApp avant de venir</li>
+					</ul>
+				</div>
+			</div>
+			<div class="foot-bas">
+				<p>© <?php echo esc_html( wp_date( 'Y' ) ); ?> SOS Phone<?php if ( $privacy ) : ?> · <a href="<?php echo esc_url( $privacy ); ?>">Confidentialité</a><?php endif; ?></p>
+				<a class="foot-artisan" href="<?php echo esc_url( sosp_espace_url() ); ?>" rel="nofollow"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Espace artisan</a>
+			</div>
 		</footer>
 	</div>
 	<div class="toast" id="toast" role="status" hidden></div>
@@ -381,7 +407,9 @@ add_shortcode( 'sos_phone', function () {
 /* Web app : icônes, manifeste, mode plein écran sur l'écran d'accueil iPhone. */
 function sosp_tetes_webapp() {
 	$u = SOSP_URL . 'assets/';
-	echo '<link rel="icon" type="image/png" href="' . esc_url( $u . 'favicon.png' ) . '">' . "\n";
+	echo '<link rel="icon" href="' . esc_url( $u . 'favicon.ico' ) . '" sizes="any">' . "\n";
+	echo '<link rel="icon" type="image/png" href="' . esc_url( $u . 'favicon-32.png' ) . '" sizes="32x32">' . "\n";
+	echo '<link rel="icon" type="image/png" href="' . esc_url( $u . 'favicon-48.png' ) . '" sizes="48x48">' . "\n";
 	echo '<link rel="apple-touch-icon" href="' . esc_url( $u . 'icone-180.png' ) . '">' . "\n";
 	echo '<link rel="manifest" href="' . esc_url( $u . 'manifest.json' ) . '">' . "\n";
 	echo '<meta name="apple-mobile-web-app-capable" content="yes">' . "\n";
@@ -389,6 +417,18 @@ function sosp_tetes_webapp() {
 	echo '<meta name="apple-mobile-web-app-status-bar-style" content="default">' . "\n";
 	echo '<meta name="apple-mobile-web-app-title" content="SOS Phone">' . "\n";
 }
+
+/* L'appli est en plein écran : pas de barre d'admin WordPress par-dessus (elle décalait l'en-tête). */
+add_filter( 'show_admin_bar', function ( $show ) {
+	if ( is_admin() || ! is_singular() ) {
+		return $show;
+	}
+	$post = get_queried_object();
+	if ( $post && isset( $post->post_content ) && ( has_shortcode( $post->post_content, 'sos_phone' ) || has_shortcode( $post->post_content, 'sos_espace' ) ) ) {
+		return false;
+	}
+	return $show;
+}, 20 );
 
 /* Page plein écran : quand une page contient le shortcode, on remplace le gabarit du thème. */
 add_filter( 'template_include', function ( $tpl ) {
