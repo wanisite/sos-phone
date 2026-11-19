@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SOS Phone — Devis réparation
  * Description: Web app de devis SOS Phone (modèle → panne → département → urgence → numéro → prix). Shortcode [sos_phone]. Les demandes arrivent dans « Demandes SOS ».
- * Version: 1.5.0
+ * Version: 1.5.1
  * Author: SOS Phone
  * Text Domain: sos-phone
  * Requires at least: 6.0
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SOSP_VERSION', '1.5.0' );
+define( 'SOSP_VERSION', '1.5.1' );
 define( 'SOSP_URL', plugin_dir_url( __FILE__ ) );
 define( 'SOSP_DIR', plugin_dir_path( __FILE__ ) );
 require_once SOSP_DIR . 'prix-admin.php';
@@ -386,6 +386,7 @@ function sosp_markup() {
 				<p>© <?php echo esc_html( wp_date( 'Y' ) ); ?> SOS Phone<?php if ( $privacy ) : ?> · <a href="<?php echo esc_url( $privacy ); ?>">Confidentialité</a><?php endif; ?></p>
 				<a class="foot-artisan" href="<?php echo esc_url( sosp_espace_url() ); ?>" rel="nofollow"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Espace artisan</a>
 			</div>
+			<p class="foot-wani"><a href="https://wanisitelab.com" target="_blank" rel="noopener"><img src="<?php echo esc_url( SOSP_URL . 'assets/wanisite.webp' ); ?>" alt="" width="37" height="24" loading="lazy"><span>Site créé et propulsé par <b>Wanisite</b></span><span class="foot-wani-d">wanisitelab.com</span></a></p>
 		</footer>
 	</div>
 	<div class="toast" id="toast" role="status" hidden></div>
