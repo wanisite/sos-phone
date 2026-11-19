@@ -1067,3 +1067,7 @@ body, .sosp-root, body.sosp-plein-ecran { font-family: var(--font); font-weight:
 .foot-wani b { font-weight: 600; color: #007f7f; }
 .foot-wani-d { color: #00a8a8; font-weight: 500; letter-spacing: .01em; }
 .foot-wani a:hover { background: rgba(0, 168, 168, .12); }
+/* Barre Wanisite : bord à bord, collée tout en bas du footer */
+.foot-wani { max-width: none; margin: 18px calc(-1 * clamp(16px, 4vw, 48px)) calc(-18px - env(safe-area-inset-bottom)) !important; }
+.foot-wani a { display: flex; width: 100%; border-radius: 0; border: 0; border-top: .5px solid rgba(0, 168, 168, .25);
+  padding: 13px clamp(16px, 4vw, 48px) calc(13px + env(safe-area-inset-bottom)); background: rgba(0, 168, 168, .08); }
