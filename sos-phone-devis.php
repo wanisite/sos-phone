@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SOS Phone — Devis réparation
  * Description: Web app de devis SOS Phone (modèle → panne → département → urgence → numéro → prix). Shortcode [sos_phone]. Les demandes arrivent dans « Demandes SOS ».
- * Version: 1.5.1
+ * Version: 1.5.4
  * Author: SOS Phone
  * Text Domain: sos-phone
  * Requires at least: 6.0
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SOSP_VERSION', '1.5.1' );
+define( 'SOSP_VERSION', '1.5.4' );
 define( 'SOSP_URL', plugin_dir_url( __FILE__ ) );
 define( 'SOSP_DIR', plugin_dir_path( __FILE__ ) );
 require_once SOSP_DIR . 'prix-admin.php';
@@ -30,7 +30,7 @@ function sosp_defaults() {
 		'heure_fin'     => 21,
 		'email_notif'   => '',
 		'pleine_page'   => 1,
-		'auto_maj'      => 1,
+		'auto_maj'      => 0, /* 1.5.2 : le site utilise les fichiers du plugin, pas GitHub */
 		'depot'         => 'wanisite/sos-phone',
 	);
 }
@@ -384,9 +384,7 @@ function sosp_markup() {
 			</div>
 			<div class="foot-bas">
 				<p>© <?php echo esc_html( wp_date( 'Y' ) ); ?> SOS Phone<?php if ( $privacy ) : ?> · <a href="<?php echo esc_url( $privacy ); ?>">Confidentialité</a><?php endif; ?></p>
-				<a class="foot-artisan" href="<?php echo esc_url( sosp_espace_url() ); ?>" rel="nofollow"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Espace artisan</a>
 			</div>
-			<p class="foot-wani"><a href="https://wanisitelab.com" target="_blank" rel="noopener"><img src="<?php echo esc_url( SOSP_URL . 'assets/wanisite.webp' ); ?>" alt="" width="37" height="24" loading="lazy"><span>Site créé et propulsé par <b>Wanisite</b></span><span class="foot-wani-d">wanisitelab.com</span></a></p>
 		</footer>
 	</div>
 	<div class="toast" id="toast" role="status" hidden></div>
@@ -419,6 +417,69 @@ function sosp_tetes_webapp() {
 	echo '<meta name="apple-mobile-web-app-title" content="SOS Phone">' . "\n";
 }
 
+/* ══ Référencement : titre, description, aperçu de partage, fiche entreprise ══ */
+define( 'SOSP_SEO_TITRE', 'Réparation iPhone à domicile 7j/7 · Prix fixe | SOS Phone' );
+define( 'SOSP_SEO_DESC', 'Écran cassé, batterie, charge ? Un réparateur SOS Phone vient chez toi, partout en France, 7j/7, et répare sur place. Ton prix fixe en 40 secondes.' );
+
+function sosp_page_devis() {
+	if ( ! is_singular() && ! is_front_page() ) {
+		return false;
+	}
+	$post = get_queried_object();
+	return $post && isset( $post->post_content ) && has_shortcode( $post->post_content, 'sos_phone' );
+}
+/* Le devis contient les prix dans la page : jamais de cache (CDN Hostinger, navigateur),
+   sinon un prix changé dans l'espace gérant mettrait des jours à apparaître. */
+add_action( 'template_redirect', function () {
+	if ( sosp_page_devis() ) {
+		nocache_headers();
+		header( 'CDN-Cache-Control: no-store' );
+	}
+}, 1 );
+add_filter( 'pre_get_document_title', function ( $t ) {
+	return sosp_page_devis() ? SOSP_SEO_TITRE : $t;
+}, 20 );
+
+function sosp_tetes_seo() {
+	$url   = is_front_page() ? home_url( '/' ) : get_permalink();
+	$img   = SOSP_URL . 'assets/og-image.jpg';
+	$o     = sosp_opts();
+	echo '<meta name="description" content="' . esc_attr( SOSP_SEO_DESC ) . '">' . "\n";
+	echo '<meta property="og:type" content="website">' . "\n";
+	echo '<meta property="og:locale" content="fr_FR">' . "\n";
+	echo '<meta property="og:site_name" content="SOS Phone">' . "\n";
+	echo '<meta property="og:title" content="' . esc_attr( SOSP_SEO_TITRE ) . '">' . "\n";
+	echo '<meta property="og:description" content="' . esc_attr( SOSP_SEO_DESC ) . '">' . "\n";
+	echo '<meta property="og:url" content="' . esc_url( $url ) . '">' . "\n";
+	echo '<meta property="og:image" content="' . esc_url( $img ) . '">' . "\n";
+	echo '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">' . "\n";
+	echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+	echo '<meta name="twitter:title" content="' . esc_attr( SOSP_SEO_TITRE ) . '">' . "\n";
+	echo '<meta name="twitter:description" content="' . esc_attr( SOSP_SEO_DESC ) . '">' . "\n";
+	echo '<meta name="twitter:image" content="' . esc_url( $img ) . '">' . "\n";
+	$same = array();
+	if ( $o['instagram'] ) {
+		$same[] = 'https://www.instagram.com/' . $o['instagram'] . '/';
+	}
+	$same[] = 'https://www.snapchat.com/add/sosphone951';
+	$ld = array(
+		'@context'     => 'https://schema.org',
+		'@type'        => 'LocalBusiness',
+		'name'         => 'SOS Phone',
+		'description'  => SOSP_SEO_DESC,
+		'url'          => home_url( '/' ),
+		'image'        => $img,
+		'logo'         => SOSP_URL . 'assets/logo.jpg',
+		'areaServed'   => array( '@type' => 'Country', 'name' => 'France' ),
+		'openingHours' => sprintf( 'Mo-Su %02d:00-%02d:00', (int) $o['heure_debut'], min( 23, (int) $o['heure_fin'] ) ),
+		'sameAs'       => $same,
+	);
+	if ( $o['whatsapp'] ) {
+		$ld['telephone'] = '+' . $o['whatsapp'];
+	}
+	echo '<script type="application/ld+json">' . wp_json_encode( $ld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>' . "\n";
+}
+
 /* L'appli est en plein écran : pas de barre d'admin WordPress par-dessus (elle décalait l'en-tête). */
 add_filter( 'show_admin_bar', function ( $show ) {
 	if ( is_admin() || ! is_singular() ) {
@@ -442,6 +503,22 @@ add_filter( 'template_include', function ( $tpl ) {
 	}
 	return $tpl;
 } );
+
+/* ══ Prix de départ : la grille réglée en local, chargée une seule fois si le site n'a encore aucun prix ══ */
+function sosp_importer_prix_depart() {
+	if ( get_option( 'sosp_prix' ) || get_option( 'sosp_prix_depart_fait' ) ) {
+		return;
+	}
+	$f = SOSP_DIR . 'assets/prix-depart.json';
+	if ( is_readable( $f ) ) {
+		$p = json_decode( (string) file_get_contents( $f ), true );
+		if ( is_array( $p ) && function_exists( 'sosp_prix_nettoie' ) ) {
+			update_option( 'sosp_prix', wp_json_encode( sosp_prix_nettoie( $p ) ), false );
+		}
+	}
+	update_option( 'sosp_prix_depart_fait', 1, false );
+}
+add_action( 'admin_init', 'sosp_importer_prix_depart' );
 
 /* ══ Activation : crée la page « Devis » et la met en page d'accueil si le site est vierge ══ */
 

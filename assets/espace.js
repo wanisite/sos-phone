@@ -169,7 +169,7 @@
     var h = '<button class="esp-retour" data-fermer>‹ Tous les iPhone</button><div class="esp-fiche">' + photo(nom) + '<div><h1 class="esp-h1">' + esc(nom) + '</h1><p class="esp-sub">Coche « Sur devis » quand tu ne veux pas afficher de prix : le client décrit sa panne et tu le chiffres sur WhatsApp.</p></div></div>';
     h += '<section class="esp-carte"><h2>📱 Écran</h2>' + (o.unique !== undefined
       ? champ(k("unique"), o.unique, "Écran", "Prix unique", true)
-      : champ(k("premium"), o.premium, "Écran premium", "Vide = gamme pas proposée", true) + champ(k("oled"), o.oled, "Écran Soft OLED", "", true) + champ(k("apple"), o.apple, "Écran original Apple", "", true)) + "</section>";
+      : champ(k("premium"), o.premium, "Écran gamme éco (InCell)", "Vide = gamme pas proposée", true) + champ(k("oled"), o.oled, "Écran gamme premium (Soft OLED)", "", true) + champ(k("apple"), o.apple, "Écran gamme originale", "", true)) + "</section>";
     h += '<section class="esp-carte"><h2>🔧 Autres réparations</h2>' +
       champ(k("batterie"), o.batterie, "Batterie", o.batterie == null ? "Sur devis = le client choisit entre les 2 batteries (" + eur(S.general.batStandard) + " / " + eur(S.general.batPremium) + ")" : "Prix unique pour ce modèle", true) +
       champ(k("connecteur"), o.connecteur, "Connecteur de charge", "", true) +

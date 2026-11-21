@@ -13,7 +13,7 @@ remove_action( 'wp_print_styles', 'print_emoji_styles' );
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 	<meta name="theme-color" content="#d9122a">
-	<meta name="description" content="SOS Phone : réparation de téléphone à domicile, partout en France. Ton prix fixe en 40 secondes, un réparateur chez toi.">
+	<?php sosp_tetes_seo(); ?>
 	<?php sosp_tetes_webapp(); ?>
 	<?php wp_head(); ?>
 </head>

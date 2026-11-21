@@ -184,3 +184,19 @@ function sosp_espace_enqueue() {
 		'sortir' => wp_nonce_url( add_query_arg( 'sortir', 1, sosp_espace_url() ), 'sosp_sortir' ),
 	) ) . ';', 'before' );
 }
+
+/* L'espace gérant ne doit jamais apparaître sur Google. */
+add_filter( 'wp_robots', function ( $r ) {
+	$page = (int) get_option( 'sosp_espace_page' );
+	if ( $page && is_page( $page ) ) {
+		return array( 'noindex' => true, 'nofollow' => true );
+	}
+	return $r;
+}, 20 );
+add_filter( 'wp_sitemaps_posts_query_args', function ( $args, $type ) {
+	$page = (int) get_option( 'sosp_espace_page' );
+	if ( 'page' === $type && $page ) {
+		$args['post__not_in'] = array_merge( (array) ( $args['post__not_in'] ?? array() ), array( $page ) );
+	}
+	return $args;
+}, 10, 2 );

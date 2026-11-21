@@ -1,0 +1,386 @@
+{
+    "modeles": {
+        "iPhone 17 Pro Max": {
+            "premium": 130,
+            "oled": 250,
+            "apple": 380,
+            "batterie": null,
+            "connecteur": 130,
+            "vitre": 190,
+            "chassis": 310,
+            "boutons": 110
+        },
+        "iPhone 17 Pro": {
+            "premium": 130,
+            "oled": 190,
+            "apple": 370,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 190,
+            "chassis": 280,
+            "boutons": 110
+        },
+        "iPhone 17 Air": {
+            "premium": null,
+            "oled": 200,
+            "apple": 370,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 190,
+            "chassis": 280,
+            "boutons": 110
+        },
+        "iPhone 17": {
+            "premium": 150,
+            "oled": 185,
+            "apple": 350,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 170,
+            "chassis": 250,
+            "boutons": 110
+        },
+        "iPhone 17e": {
+            "premium": 100,
+            "oled": 150,
+            "apple": 200,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 210,
+            "chassis": 270,
+            "boutons": 110
+        },
+        "iPhone 16 Pro Max": {
+            "premium": 120,
+            "oled": 185,
+            "apple": 310,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 210,
+            "chassis": 230,
+            "boutons": 110
+        },
+        "iPhone 16 Pro": {
+            "premium": 110,
+            "oled": 175,
+            "apple": 295,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 170,
+            "chassis": 200,
+            "boutons": 110
+        },
+        "iPhone 16 Plus": {
+            "premium": 120,
+            "oled": 160,
+            "apple": 215,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 190,
+            "chassis": null,
+            "boutons": 110
+        },
+        "iPhone 16": {
+            "premium": 100,
+            "oled": 150,
+            "apple": 250,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 150,
+            "chassis": 170,
+            "boutons": 110
+        },
+        "iPhone 16e": {
+            "premium": 100,
+            "oled": 150,
+            "apple": 200,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 180,
+            "chassis": 190,
+            "boutons": 110
+        },
+        "iPhone 15 Pro Max": {
+            "premium": 120,
+            "oled": 170,
+            "apple": 350,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 170,
+            "chassis": 230,
+            "boutons": 110
+        },
+        "iPhone 15 Pro": {
+            "premium": 110,
+            "oled": 150,
+            "apple": 310,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 150,
+            "chassis": 200,
+            "boutons": 110
+        },
+        "iPhone 15 Plus": {
+            "premium": 110,
+            "oled": 180,
+            "apple": 250,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 150,
+            "chassis": null,
+            "boutons": 110
+        },
+        "iPhone 15": {
+            "premium": 90,
+            "oled": 145,
+            "apple": 230,
+            "batterie": null,
+            "connecteur": 120,
+            "vitre": 140,
+            "chassis": 170,
+            "boutons": 110
+        },
+        "iPhone 14 Pro Max": {
+            "premium": 95,
+            "oled": 135,
+            "apple": 235,
+            "batterie": null,
+            "connecteur": 105,
+            "vitre": null,
+            "chassis": 195,
+            "boutons": 95
+        },
+        "iPhone 14 Pro": {
+            "premium": 85,
+            "oled": 130,
+            "apple": 225,
+            "batterie": null,
+            "connecteur": 105,
+            "vitre": null,
+            "chassis": 175,
+            "boutons": 95
+        },
+        "iPhone 14 Plus": {
+            "premium": 80,
+            "oled": 135,
+            "apple": 185,
+            "batterie": null,
+            "connecteur": 105,
+            "vitre": null,
+            "chassis": 155,
+            "boutons": 95
+        },
+        "iPhone 14": {
+            "premium": 75,
+            "oled": 120,
+            "apple": 175,
+            "batterie": null,
+            "connecteur": 105,
+            "vitre": 115,
+            "chassis": 135,
+            "boutons": 95
+        },
+        "iPhone 13 Pro Max": {
+            "premium": 85,
+            "oled": 135,
+            "apple": 235,
+            "batterie": null,
+            "connecteur": 105,
+            "vitre": null,
+            "chassis": 195,
+            "boutons": 75
+        },
+        "iPhone 13 Pro": {
+            "premium": 80,
+            "oled": 135,
+            "apple": 185,
+            "batterie": null,
+            "connecteur": 105,
+            "vitre": null,
+            "chassis": 175,
+            "boutons": 75
+        },
+        "iPhone 13": {
+            "premium": 70,
+            "oled": 115,
+            "apple": 185,
+            "batterie": null,
+            "connecteur": 105,
+            "vitre": null,
+            "chassis": 135,
+            "boutons": 75
+        },
+        "iPhone 13 mini": {
+            "premium": 65,
+            "oled": 105,
+            "apple": 185,
+            "batterie": null,
+            "connecteur": 105,
+            "vitre": null,
+            "chassis": 135,
+            "boutons": 75
+        },
+        "iPhone 12 Pro Max": {
+            "premium": 80,
+            "oled": 120,
+            "apple": 200,
+            "batterie": null,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 210,
+            "boutons": 90
+        },
+        "iPhone 12 Pro": {
+            "premium": 75,
+            "oled": 110,
+            "apple": 190,
+            "batterie": null,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 190,
+            "boutons": 90
+        },
+        "iPhone 12": {
+            "premium": 75,
+            "oled": 110,
+            "apple": 190,
+            "batterie": null,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone 12 mini": {
+            "premium": 75,
+            "oled": 110,
+            "apple": 190,
+            "batterie": null,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone 11 Pro Max": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone 11 Pro": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone 11": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone XS Max": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone XS": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone XR": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone X": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone SE (2020 \/ 2022)": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone 8 Plus": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone 8": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone 7 Plus": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        },
+        "iPhone 7": {
+            "unique": 70,
+            "batterie": 70,
+            "connecteur": 90,
+            "vitre": null,
+            "chassis": 150,
+            "boutons": 90
+        }
+    },
+    "general": {
+        "diagnostic": 50,
+        "desoxydation": 70,
+        "sansLogo": 50,
+        "chassisCombine": 70,
+        "batStandard": 75,
+        "batPremium": 90,
+        "remise2": 20,
+        "remise3": 30
+    },
+    "extras": [],
+    "cats": [],
+    "promos": [
+        {
+            "code": "LIVE15",
+            "taux": 15,
+            "mois": 0
+        },
+        {
+            "code": "OCTOBRE10",
+            "taux": 10,
+            "mois": 10
+        }
+    ],
+    "bloques": [],
+    "fermes": []
+}

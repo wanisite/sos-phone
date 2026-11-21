@@ -288,7 +288,7 @@ function sosp_prix_page() {
 			</div>
 
 			<h2>6. Réparations par téléphone</h2>
-			<p class="description">« Écran premium » vide = cette gamme n'est pas proposée. « Batterie » vide = le client choisit entre les 2 batteries (prix généraux). Les colonnes en violet sont tes prestations en plus.</p>
+			<p class="description">« Écran éco » vide = cette gamme n'est pas proposée. « Batterie » vide = le client choisit entre les 2 batteries (prix généraux). Les colonnes en violet sont tes prestations en plus.</p>
 			<div class="sosp-table-wrap"><table class="widefat sosp-table" id="sospTable"></table></div>
 
 			<div class="sosp-barre">
@@ -445,7 +445,7 @@ function sosp_prix_page() {
 		}
 		function dessineTable() {
 			var C = choixCats();
-			var cols = [["premium", "Écran premium"], ["oled", "Écran Soft OLED"], ["apple", "Écran Apple"], ["batterie", "Batterie"],
+			var cols = [["premium", "Écran gamme éco"], ["oled", "Écran gamme premium (Soft OLED)"], ["apple", "Écran gamme originale"], ["batterie", "Batterie"],
 				["connecteur", "Connecteur"], ["vitre", "Vitre arrière"], ["chassis", "Châssis"], ["boutons", "Boutons"]];
 			var nomCat = {}; C.forEach(function (c) { nomCat[c.id] = c.nom.replace(" (ajoutée)", ""); });
 			var h = "<thead><tr><th>Téléphone</th>" + cols.map(function (c) { return "<th>" + c[1] + "</th>"; }).join("") +

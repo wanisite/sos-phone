@@ -20,7 +20,7 @@ const CONFIG = {
   INSTAGRAM: "sosphoneparis75",
 
   /* E-mail de contact affiché dans l'en-tête. Vide = icône masquée. */
-  EMAIL: "momofoxy96@gmail.com",
+  EMAIL: "",
 
   /* Compte Snapchat, sans @. Vide = icône masquée. */
   SNAPCHAT: "sosphone951",
