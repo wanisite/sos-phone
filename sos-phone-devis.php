@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SOS Phone — Devis réparation
  * Description: Web app de devis SOS Phone (modèle → panne → département → urgence → numéro → prix). Shortcode [sos_phone]. Les demandes arrivent dans « Demandes SOS ».
- * Version: 1.5.4
+ * Version: 1.5.5
  * Author: SOS Phone
  * Text Domain: sos-phone
  * Requires at least: 6.0
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SOSP_VERSION', '1.5.4' );
+define( 'SOSP_VERSION', '1.5.5' );
 define( 'SOSP_URL', plugin_dir_url( __FILE__ ) );
 define( 'SOSP_DIR', plugin_dir_path( __FILE__ ) );
 require_once SOSP_DIR . 'prix-admin.php';

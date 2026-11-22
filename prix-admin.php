@@ -39,7 +39,7 @@ function sosp_prix_nettoie( $r ) {
 			continue;
 		}
 		$c = array();
-		foreach ( array( 'premium', 'oled', 'apple', 'unique', 'batterie', 'connecteur', 'vitre', 'chassis', 'boutons' ) as $k ) {
+		foreach ( array( 'premium', 'oled', 'apple', 'unique', 'batterie', 'batN', 'batP', 'connecteur', 'vitre', 'chassis', 'boutons' ) as $k ) {
 			if ( array_key_exists( $k, $m ) ) {
 				$c[ $k ] = sosp_prix_num( $m[ $k ] );
 			}
@@ -178,6 +178,8 @@ window.sospAppliquePrix = function (P) {
       }
     }
     if ("batterie" in o) m.batterieFixe = o.batterie == null ? null : o.batterie;
+    /* Batteries par téléphone (normale / premium), réglées dans l'espace artisan ou l'admin */
+    if ("batN" in o || "batP" in o) { m.batN = o.batN == null ? null : o.batN; m.batP = o.batP == null ? null : o.batP; m.batterieFixe = null; }
     ["connecteur", "vitre", "chassis", "boutons"].forEach(function (k) { if (k in o) m[k] = o[k]; });
   });
   /* Codes promo gérés dans WordPress : ils remplacent ceux de config.js */
@@ -288,7 +290,7 @@ function sosp_prix_page() {
 			</div>
 
 			<h2>6. Réparations par téléphone</h2>
-			<p class="description">« Écran éco » vide = cette gamme n'est pas proposée. « Batterie » vide = le client choisit entre les 2 batteries (prix généraux). Les colonnes en violet sont tes prestations en plus.</p>
+			<p class="description">« Écran éco » vide = cette gamme n'est pas proposée. « Batterie normale » ou « Batterie premium » vide = cette batterie n'est pas proposée sur ce modèle. Les colonnes en violet sont tes prestations en plus.</p>
 			<div class="sosp-table-wrap"><table class="widefat sosp-table" id="sospTable"></table></div>
 
 			<div class="sosp-barre">
@@ -412,11 +414,11 @@ function sosp_prix_page() {
 				tel.forEach(function (m, i) { var e = $("xp_" + x.id + "_" + i); if (e) { var v = val("xp_" + x.id + "_" + i); if (v == null) delete x.prix[m.nom]; else x.prix[m.nom] = v; } });
 			});
 			tel.forEach(function (m, i) {
-				if (!$("m" + i + "_batterie")) return;
+				if (!$("m" + i + "_batN")) return;
 				var o = {};
 				if ($("m" + i + "_unique")) o.unique = val("m" + i + "_unique");
 				else { o.premium = val("m" + i + "_premium"); o.oled = val("m" + i + "_oled"); o.apple = val("m" + i + "_apple"); }
-				o.batterie = val("m" + i + "_batterie");
+				o.batterie = null; o.batN = val("m" + i + "_batN"); o.batP = val("m" + i + "_batP");
 				["connecteur", "vitre", "chassis", "boutons"].forEach(function (k) { o[k] = val("m" + i + "_" + k); });
 				prixModeles[m.nom] = o;
 			});
@@ -445,7 +447,7 @@ function sosp_prix_page() {
 		}
 		function dessineTable() {
 			var C = choixCats();
-			var cols = [["premium", "Écran gamme éco"], ["oled", "Écran gamme premium (Soft OLED)"], ["apple", "Écran gamme originale"], ["batterie", "Batterie"],
+			var cols = [["premium", "Écran gamme éco"], ["oled", "Écran gamme premium (Soft OLED)"], ["apple", "Écran gamme originale"], ["batN", "Batterie normale"], ["batP", "Batterie premium"],
 				["connecteur", "Connecteur"], ["vitre", "Vitre arrière"], ["chassis", "Châssis"], ["boutons", "Boutons"]];
 			var nomCat = {}; C.forEach(function (c) { nomCat[c.id] = c.nom.replace(" (ajoutée)", ""); });
 			var h = "<thead><tr><th>Téléphone</th>" + cols.map(function (c) { return "<th>" + c[1] + "</th>"; }).join("") +
@@ -456,7 +458,12 @@ function sosp_prix_page() {
 				h += "<tr><td>" + m.nom + "</td>";
 				if (unique) h += '<td colspan="3">' + inp("m" + i + "_unique", o ? o.unique : e.unique) + ' <span class="description">prix unique écran</span></td>';
 				else h += "<td>" + inp("m" + i + "_premium", o ? o.premium : e ? e.premium : null, "Pas proposé") + "</td><td>" + inp("m" + i + "_oled", o ? o.oled : e ? e.oled : null) + "</td><td>" + inp("m" + i + "_apple", o ? o.apple : e ? e.apple : null) + "</td>";
-				h += "<td>" + inp("m" + i + "_batterie", o ? o.batterie : m.batterieFixe, "2 batteries") + "</td>";
+				var bN, bP;
+				if (o && ("batN" in o)) { bN = o.batN; bP = o.batP; }
+				else if (m.batN !== undefined || m.batP !== undefined) { bN = m.batN; bP = m.batP; }
+				else if (typeof m.batterieFixe === "number") { bN = m.batterieFixe; bP = null; }
+				else { bN = BATTERIE[0].prix; bP = BATTERIE[1] ? BATTERIE[1].prix : null; }
+				h += "<td>" + inp("m" + i + "_batN", bN, "Pas proposée") + "</td><td>" + inp("m" + i + "_batP", bP, "Pas proposée") + "</td>";
 				["connecteur", "vitre", "chassis", "boutons"].forEach(function (k) { h += "<td>" + inp("m" + i + "_" + k, o ? o[k] : m[k]) + "</td>"; });
 				extras.forEach(function (x) { h += '<td class="sosp-x">' + inp("xp_" + x.id + "_" + i, x.prix[m.nom], "—") + "</td>"; });
 				h += "</tr>";

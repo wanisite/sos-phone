@@ -675,7 +675,10 @@ function dessinTelephone(nom) {
           if (m.ecran.unique) { addItem(id, "Écran", m.ecran.unique, GARANTIES.defaut); break; }
           return go("gamme", { type: "ecran" });
         case "batterie":
-          if (typeof m.batterieFixe === "number" && !extras(id, m).length) { addItem(id, "Batterie", m.batterieFixe); break; }
+          /* Batteries réglées par l'artisan pour ce téléphone (normale / premium) */
+          var gb = gammesBase(id, m).l.concat(extras(id, m));
+          if (!gb.length) { devisItem(id); break; }
+          if (gb.length === 1 && !extras(id, m).length) { addItem(id, "Batterie", gb[0].prix, gb[0].g, { gamme: gb[0].gamme }); break; }
           return go("gamme", { type: "batterie" });
         case "connecteur":
           return go("conseil");
@@ -730,6 +733,12 @@ function dessinTelephone(nom) {
     if (type === "vitre" && m.vitre == null) return { t: "Quelle vitre arrière ?", s: "Choisis la pièce qui te convient.", l: [] };
     if (type === "vitre" && !m.vitreSansLogo) return { t: "Quelle vitre arrière ?", s: "Choisis la pièce qui te convient.",
       l: [{ titre: "Vitre arrière d'origine", detail: "La pièce d'origine, logo compris.", prix: m.vitre, gamme: "d'origine", best: true, g: GARANTIES.vitre }] };
+    if (type === "batterie" && (m.batN !== undefined || m.batP !== undefined)) {
+      var lb = [];
+      if (m.batN != null) lb.push({ titre: BATTERIE[0].titre, detail: BATTERIE[0].detail, prix: m.batN, gamme: BATTERIE[0].gamme, best: m.batP == null, g: GARANTIES.batterie });
+      if (m.batP != null && BATTERIE[1]) lb.push({ titre: BATTERIE[1].titre, detail: BATTERIE[1].detail, prix: m.batP, gamme: BATTERIE[1].gamme, best: true, g: GARANTIES.batterie });
+      return { t: "Quelle batterie ?", s: lb.length > 1 ? "La différence se joue sur l'autonomie et la longévité." : "Batterie neuve, posée chez toi.", l: lb };
+    }
     if (type === "batterie" && typeof m.batterieFixe === "number") return { t: "Quelle batterie ?", s: "Choisis la batterie qui te convient.",
       l: [{ titre: "Batterie", detail: "Batterie neuve, posée chez toi.", prix: m.batterieFixe, gamme: "standard", best: true, g: GARANTIES.batterie }] };
     if (type === "ecran" && !m.ecran) return { t: "Quel écran ?", s: "Choisis la pièce qui te convient.", l: [] };

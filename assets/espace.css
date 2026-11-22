@@ -143,3 +143,4 @@ button { cursor: pointer; }
   .esp-tous > span:first-child { flex: 1 1 auto; }
 }
 @media (max-width: 420px) { .esp-sortir { display: none; } .esp-grille { grid-template-columns: 1fr; } .esp-eur input { width: 96px; } }
+.esp-note { margin: 10px 0 2px; font-size: 13px; color: var(--ink2); }

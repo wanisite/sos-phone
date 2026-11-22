@@ -55,7 +55,11 @@
       var e = m.ecran, o = {};
       if (e && e.unique != null) o.unique = e.unique;
       else { o.premium = e ? e.premium : null; o.oled = e ? e.oled : null; o.apple = e ? e.apple : null; }
-      o.batterie = typeof m.batterieFixe === "number" ? m.batterieFixe : null;
+      /* Batteries de CE téléphone : normale + premium (anciens réglages repris tels quels) */
+      if (m.batN !== undefined || m.batP !== undefined) { o.batN = m.batN == null ? null : m.batN; o.batP = m.batP == null ? null : m.batP; }
+      else if (typeof m.batterieFixe === "number") { o.batN = m.batterieFixe; o.batP = null; }
+      else { o.batN = BATTERIE[0].prix; o.batP = BATTERIE[1] ? BATTERIE[1].prix : null; }
+      o.batterie = null;
       ["connecteur", "vitre", "chassis", "boutons"].forEach(function (k) { o[k] = m[k] == null ? null : m[k]; });
       st.modeles[m.nom] = o;
     });
@@ -92,11 +96,11 @@
       .concat(S.cats.filter(function (c) { return c.titre; }).map(function (c) { return { id: c.id, nom: c.titre }; }));
   }
   function photo(nom) { return PHOTO[nom] ? '<img src="' + E.photos + "dos/" + PHOTO[nom] + '.webp" alt="" loading="lazy">' : ""; }
-  function champ(cle, valeur, label, sous, devisPossible, ph) {
+  function champ(cle, valeur, label, sous, devisPossible, ph, libCase) {
     var vide = valeur == null;
     return '<div class="esp-champ' + (vide && devisPossible ? " vide" : "") + '"><div class="esp-champ-t"><b>' + esc(label) + "</b>" + (sous ? "<small>" + esc(sous) + "</small>" : "") + "</div>" +
       '<div class="esp-champ-v"><span class="esp-eur"><input inputmode="decimal" data-k="' + cle + '" value="' + (vide ? "" : valeur) + '" placeholder="' + (ph || (devisPossible ? "Sur devis" : "—")) + '"' + (vide && devisPossible ? " disabled" : "") + "><em>€</em></span>" +
-      (devisPossible ? '<label class="esp-devis"><input type="checkbox" data-devis="' + cle + '"' + (vide ? " checked" : "") + "> Sur devis</label>" : "") + "</div></div>";
+      (devisPossible ? '<label class="esp-devis"><input type="checkbox" data-devis="' + cle + '"' + (vide ? " checked" : "") + "> " + (libCase || "Sur devis") + "</label>" : "") + "</div></div>";
   }
 
   /* ── Lecture / écriture d'une valeur par son chemin « a.b.c » ── */
@@ -144,8 +148,8 @@
     h += '<section class="esp-carte"><h2>Pour tous les iPhone</h2>' +
       champ("g|diagnostic", g.diagnostic, "Diagnostic", "Déduit si le client fait la réparation") +
       champ("g|desoxydation", g.desoxydation, "Désoxydation", "Téléphone tombé dans l'eau") +
-      champ("g|batStandard", g.batStandard, "Batterie normale", "Quand le modèle n'a pas de prix batterie à lui") +
-      champ("g|batPremium", g.batPremium, "Batterie premium", "") +
+      champ("g|batStandard", g.batStandard, "Batterie normale (prix de départ)", "Utilisé seulement pour un iPhone qui n'a pas encore ses propres prix batterie") +
+      champ("g|batPremium", g.batPremium, "Batterie premium (prix de départ)", "Pareil : chaque iPhone a ses propres prix dans sa fiche") +
       champ("g|sansLogo", g.sansLogo, "Vitre arrière sans logo", "€ de moins que la vitre d'origine") +
       champ("g|chassisCombine", g.chassisCombine, "Vitre + châssis ensemble", "Prix de la vitre si le châssis est fait aussi") +
       '<div class="esp-duo">' + champ("g|remise2", g.remise2, "Remise 2e réparation", "en %", false, "%") + champ("g|remise3", g.remise3, "Remise 3e et +", "en %", false, "%") + "</div></section>";
@@ -160,7 +164,7 @@
       if (filtre && m.nom.toLowerCase().indexOf(filtre.toLowerCase().trim()) < 0) return;
       var o = S.modeles[m.nom], ecr = o.unique != null ? o.unique : [o.premium, o.oled, o.apple].filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; })[0];
       var nbX = S.extras.filter(function (x) { return x.prix[m.nom] != null; }).length;
-      h += '<button class="esp-ligne" data-modele="' + esc(m.nom) + '">' + photo(m.nom) + '<span class="esp-ligne-t"><b>' + esc(m.nom) + "</b><small>Écran " + (ecr == null ? "sur devis" : "dès " + eur(ecr)) + " · Batterie " + (o.batterie != null ? eur(o.batterie) : eur(S.general.batStandard) + "/" + eur(S.general.batPremium)) + (nbX ? " · +" + nbX + " prestation" + (nbX > 1 ? "s" : "") : "") + '</small></span><span class="esp-chev">›</span></button>';
+      h += '<button class="esp-ligne" data-modele="' + esc(m.nom) + '">' + photo(m.nom) + '<span class="esp-ligne-t"><b>' + esc(m.nom) + "</b><small>Écran " + (ecr == null ? "sur devis" : "dès " + eur(ecr)) + " · Batterie " + (o.batN == null && o.batP == null ? "sur devis" : [o.batN, o.batP].filter(function (v) { return v != null; }).map(eur).join(" / ")) + (nbX ? " · +" + nbX + " prestation" + (nbX > 1 ? "s" : "") : "") + '</small></span><span class="esp-chev">›</span></button>';
     });
     return h + "</div>";
   }
@@ -170,8 +174,11 @@
     h += '<section class="esp-carte"><h2>📱 Écran</h2>' + (o.unique !== undefined
       ? champ(k("unique"), o.unique, "Écran", "Prix unique", true)
       : champ(k("premium"), o.premium, "Écran gamme éco (InCell)", "Vide = gamme pas proposée", true) + champ(k("oled"), o.oled, "Écran gamme premium (Soft OLED)", "", true) + champ(k("apple"), o.apple, "Écran gamme originale", "", true)) + "</section>";
+    h += '<section class="esp-carte"><h2>🔋 Batteries</h2>' +
+      champ(k("batN"), o.batN, BATTERIE[0].titre, "Le client la voit avec ce prix. Coche « Pas proposée » si tu ne la fais pas sur ce modèle.", true, "Pas proposée", "Pas proposée") +
+      champ(k("batP"), o.batP, BATTERIE[1] ? BATTERIE[1].titre : "Batterie premium", "Meilleure autonomie. Coche « Pas proposée » si tu ne la fais pas sur ce modèle.", true, "Pas proposée", "Pas proposée") +
+      '<p class="esp-note">' + (o.batN == null && o.batP == null ? "Aucune batterie proposée : le client décrira sa panne et tu le chiffreras sur WhatsApp." : "Le client choisit entre les batteries proposées ici.") + "</p></section>";
     h += '<section class="esp-carte"><h2>🔧 Autres réparations</h2>' +
-      champ(k("batterie"), o.batterie, "Batterie", o.batterie == null ? "Sur devis = le client choisit entre les 2 batteries (" + eur(S.general.batStandard) + " / " + eur(S.general.batPremium) + ")" : "Prix unique pour ce modèle", true) +
       champ(k("connecteur"), o.connecteur, "Connecteur de charge", "", true) +
       champ(k("vitre"), o.vitre, "Vitre arrière d'origine", "", true) +
       champ(k("chassis"), o.chassis, "Châssis", "", true) +
@@ -284,7 +291,15 @@
     if (t.dataset.devis) {
       var cle = t.dataset.devis, champI = $root.querySelector('[data-k="' + cle.replace(/"/g, '\\"') + '"]');
       if (t.checked) { ecrireCle(cle, null); champI.value = ""; champI.disabled = true; }
-      else { champI.disabled = false; champI.focus(); }
+      else {
+        champI.disabled = false;
+        /* Batterie remise en service : on pré-remplit avec le prix de départ pour qu'elle soit tout de suite proposée */
+        if (champI.value === "" && /\|bat[NP]$/.test(cle)) {
+          var def = /batN$/.test(cle) ? S.general.batStandard : S.general.batPremium;
+          if (def != null) { champI.value = def; ecrireCle(cle, def); }
+        }
+        champI.focus();
+      }
       t.closest(".esp-champ").classList.toggle("vide", t.checked);
     }
     if (t.dataset.x && t.tagName === "SELECT") { var q = t.dataset.x.split("|"), x = S.extras.filter(function (y) { return y.id === q[0]; })[0]; if (x) { x.cat = t.value; salir(true); } }
