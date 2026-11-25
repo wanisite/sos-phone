@@ -497,35 +497,28 @@ function dessinTelephone(nom) {
 
   /* ── Étape 1 : la marque. iPhone = prix fixes ; les autres = on décrit la panne. ── */
   var MARQUES = [
-    { id: "apple", nom: "iPhone", s: "Prix fixe tout de suite" },
-    { id: "samsung", nom: "Samsung" }, { id: "google", nom: "Google Pixel" }, { id: "xiaomi", nom: "Xiaomi" },
-    { id: "huawei", nom: "Huawei" }, { id: "oppo", nom: "Oppo" }, { id: "oneplus", nom: "OnePlus" },
-    { id: "honor", nom: "Honor" }, { id: "motorola", nom: "Motorola" }, { id: "autre", nom: "Autre marque" }
+    { id: "apple", nom: "Apple", s: "iPhone · prix fixe tout de suite" },
+    { id: "samsung", nom: "Samsung", s: "Galaxy · devis sur WhatsApp" },
+    { id: "autre", nom: "Autre marque", s: "Xiaomi, Pixel, Oppo…" }
   ];
   var MARQUES_BASE = PHOTOS_BASE.replace(/photos\/$/, "") + "marques/";
   SCREENS.marque = function () {
     var again = S.phones.length > 0;
     return '<p class="step">Étape 1 sur 4' + (again ? " · Téléphone " + (S.phones.length + 1) : "") + '</p>' +
       '<h1 class="h1">Quelle marque ?</h1>' +
-      '<p class="sub">iPhone : ton prix tout de suite. Autres marques : décris la panne, on te chiffre vite.</p>' +
+      '<p class="sub sub-marques"><span><b>iPhone</b>\u00a0: ton prix tout de suite.</span><span><b>Autres marques</b>\u00a0: on te chiffre vite.</span></p>' +
       '<div class="marques">' + MARQUES.map(function (b) {
         var logo = b.id === "autre"
           ? '<span class="marque-q">?</span>'
-          : '<img src="' + MARQUES_BASE + b.id + '.svg" alt="" width="40" height="40">';
-        if (b.id === "apple") {
-          return '<button class="marque-iphone" data-act="marque" data-v="apple">' +
-            '<span class="mi-txt"><span class="mi-logo"><img src="' + MARQUES_BASE + 'apple.svg" alt="" width="26" height="26">iPhone</span>' +
-            '<span class="mi-t">Ton prix fixe,<br>tout de suite</span>' +
-            '<span class="mi-go">Choisir mon iPhone <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span>' +
-            '<span class="mi-photos" aria-hidden="true">' + ["15", "16", "17pro"].map(function (k) {
-              return '<img src="' + PHOTOS_BASE + "dos/" + k + '.webp" alt="" loading="lazy">';
-            }).join("") + "</span></button>";
-        }
+          : '<img src="' + MARQUES_BASE + b.id + '.svg" alt="">';
         return '<button class="marque" data-act="marque" data-v="' + b.id + '">' +
-          '<span class="marque-logo">' + logo + '</span><span class="marque-n">' + esc(b.nom) + '</span>' +
-          (b.s ? '<span class="marque-s">' + esc(b.s) + "</span>" : "") + "</button>";
-      }).join("").replace('</button><button class="marque"', '</button><p class="marques-autres">Autres marques · sur devis</p><button class="marque"') + "</div>";
+          '<span class="marque-logo">' + logo + '</span>' +
+          '<span class="marque-txt"><span class="marque-n">' + esc(b.nom) + '</span><span class="marque-s">' + esc(b.s) + "</span></span>" +
+          '<span class="marque-go" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>';
+      }).join("") + "</div>";
   };
+  /* iPhone/Safari : sans écouteur tactile, l'état « appuyé » (:active) ne s'affiche pas. */
+  document.addEventListener("touchstart", function () {}, { passive: true });
   ACTS.marque = function (id) {
     if (id === "apple") return go("modele");
     var b = MARQUES.filter(function (x) { return x.id === id; })[0];

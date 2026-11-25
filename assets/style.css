@@ -892,26 +892,38 @@ body, .sosp-root, body.sosp-plein-ecran { font-family: var(--font); font-weight:
 }
 @media (prefers-reduced-motion: reduce) { .statut i { animation: none; } }
 
-/* ═══ Étape 1 : la marque ═══ */
-.marques { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.marque { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 118px; padding: 18px 10px;
-  border: 0; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px var(--line); color: var(--ink);
-  transition: box-shadow .2s var(--ease), transform .2s var(--ease); }
-.marque:hover { box-shadow: 0 0 0 1.5px var(--ink); }
-.marque:active { transform: scale(.97); }
-.marque-logo { width: 44px; height: 44px; display: grid; place-items: center; }
-.marque-logo img { width: 40px; height: 40px; }
-.marque-q { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ink-3); color: var(--ink-2); display: grid; place-items: center; font: 600 22px/1 var(--font-d); }
-.marque-n { font: 600 16px/1.1 var(--font-d); }
-.marque-apple { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; gap: 16px; min-height: 92px; padding: 18px 20px;
-  background: #111; color: #fff; box-shadow: none; text-align: left; }
-.marque-apple:hover { box-shadow: 0 10px 26px -12px rgba(0,0,0,.6); }
-.marque-apple img { filter: invert(1); }
-.marque-apple .marque-n { font-size: 22px; }
-.marque-apple .marque-s { margin-left: auto; font: 500 12px/1 var(--font-d); text-transform: uppercase; letter-spacing: .06em; background: var(--yellow); color: #fff; padding: 8px 11px; border-radius: 99px; }
-@media (min-width: 640px) { .marques { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (min-width: 900px) { .screen:has(.marques) { max-width: 980px; } .marques { gap: 14px; } .marque { min-height: 140px; } }
-@media (max-width: 380px) { .marque-apple .marque-s { display: none; } }
+/* ═══ Étape 1 : la marque — téléphone : cartes empilées ; ordi : 3 grandes cartes ═══ */
+.marques { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 6px; }
+.marque { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; min-height: 0; padding: 12px 14px; text-align: left;
+  border: 1.5px solid #f2c9ce; border-radius: 22px; background: linear-gradient(180deg, #fff 0%, #fff8f8 100%); color: var(--ink); cursor: pointer;
+  box-shadow: 0 1px 2px rgba(229,23,47,.06), 0 8px 22px -16px rgba(229,23,47,.45);
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease), transform .2s var(--ease); }
+.marque:hover { border-color: var(--yellow); box-shadow: 0 14px 30px -16px rgba(229,23,47,.55); transform: translateY(-2px); }
+.marque:active { transform: scale(.98); }
+.marque:focus-visible { outline: 3px solid rgba(229,23,47,.35); outline-offset: 3px; }
+.marque-logo { flex: none; width: 68px; height: 68px; border-radius: 20px; background: var(--yellow-soft); display: grid; place-items: center; }
+.marque-logo img { width: 38px; height: 38px; }
+.marque-logo img[src*="samsung"] { width: 56px; height: auto; }
+.marque-q { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--yellow); color: var(--yellow); display: grid; place-items: center; font: 600 18px/1 var(--font-d); }
+.marque-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.marque-n { font: 600 20px/1.1 var(--font-d); letter-spacing: -.02em; }
+.marque-s { font: 400 14px/1.3 var(--font); color: var(--ink-2); }
+.marque-go { flex: none; width: 26px; height: 26px; background: none; color: var(--yellow); display: grid; place-items: center;
+  transition: transform .2s var(--ease); }
+.marque:hover .marque-go { transform: translateX(3px); }
+@media (min-width: 760px) {
+  .screen:has(.marques) { max-width: 1040px; }
+  .marques { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 14px; }
+  .marque { flex-direction: column; align-items: center; text-align: center; gap: 14px; min-height: 0; padding: 22px 20px 18px; border-radius: 28px; }
+  .marque-txt { align-items: center; }
+  .marque-logo { width: 136px; height: 136px; border-radius: 34px; }
+  .marque-logo img { width: 72px; height: 72px; }
+  .marque-logo img[src*="samsung"] { width: 112px; height: auto; }
+  .marque-q { width: 72px; height: 72px; font-size: 38px; border-width: 3px; }
+  .marque-n { font-size: 28px; }
+  .marque-s { font-size: 15px; }
+  .marque-go { width: 30px; height: 30px; }
+}
 
 /* ═══ Tuile iPhone : la plus visible de l'écran des marques ═══ */
 .marque-iphone { grid-column: 1 / -1; position: relative; overflow: hidden; display: flex; align-items: stretch; justify-content: space-between;
@@ -1076,3 +1088,26 @@ body, .sosp-root, body.sosp-plein-ecran { font-family: var(--font); font-weight:
 .opt-urg .choice-arrow { font-size: 24px; color: var(--ink-3); margin-left: auto; }
 .opt-urg[aria-pressed="true"] { box-shadow: var(--shadow), inset 0 0 0 2px var(--blue); }
 .opt-urg.best .opt-ico { background: var(--yellow-soft); }
+
+/* ═══ Cartes de marque : vrai bouton en relief (25/11/2026) ═══
+   Un rebord rouge pâle sous la carte ; quand on appuie, la carte descend dessus. */
+.sub-marques span { display: block; }
+.sub-marques b { color: var(--ink); font-weight: 600; }
+.marque { -webkit-tap-highlight-color: transparent; border-color: #efbfc5;
+  background: linear-gradient(180deg, #fff 0%, #fff6f6 100%);
+  box-shadow: inset 0 1px 0 #fff, 0 6px 0 #f1c3c9, 0 12px 22px -10px rgba(229,23,47,.45);
+  transform: translateY(0); transition: transform .12s var(--ease), box-shadow .12s var(--ease), border-color .2s var(--ease); margin-bottom: 6px; }
+.marque:hover { transform: translateY(-2px); box-shadow: inset 0 1px 0 #fff, 0 8px 0 #eeb6bd, 0 16px 26px -10px rgba(229,23,47,.5); }
+.marque:active { transform: translateY(5px); border-color: var(--yellow);
+  box-shadow: inset 0 2px 6px rgba(229,23,47,.12), 0 1px 0 #f1c3c9, 0 4px 10px -6px rgba(229,23,47,.4); }
+.marque:active .marque-go { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) { .marque, .marque:hover, .marque:active { transition: none; } }
+@media (max-width: 380px) {
+  .marque { gap: 11px; padding: 11px 12px; }
+  .marque-logo { width: 56px; height: 56px; border-radius: 17px; }
+  .marque-logo img { width: 32px; height: 32px; }
+  .marque-logo img[src*="samsung"] { width: 48px; }
+  .marque-q { width: 32px; height: 32px; font-size: 16px; }
+  .marque-n { font-size: 19px; }
+  .marque-s { font-size: 13px; }
+}
